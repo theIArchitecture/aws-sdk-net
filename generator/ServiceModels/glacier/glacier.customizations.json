@@ -1,0 +1,108 @@
+{
+    "runtimePipelineOverride": {
+        "overrides": [
+            { "operation": "addAfter", "newType": "Amazon.Glacier.Internal.ProcessRequestHandler", "targetType": "Amazon.Runtime.Internal.Marshaller" }
+        ]
+    },
+    "noArgOverloads": [
+        "ListVaults"
+    ],
+    "skipUriPropertyValidation": [ 
+        "AccountId"
+    ],
+	"shapeModifiers": {
+        "ListMultipartUploadsInput": {
+            "modify": [
+                {
+                    "marker": { "emitPropertyName": "UploadIdMarker" }
+                }
+            ]
+        }
+	},
+	"dataTypeSwap" : {
+		"DescribeVaultOutput" : {
+            "CreationDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.NullableDateTimeUnmarshaller"
+            },
+            "LastInventoryDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.DateTimeUnmarshaller"
+            }
+		},
+		"GlacierJobDescription" : {
+            "CreationDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.NullableDateTimeUnmarshaller"
+            },
+            "CompletionDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.NullableDateTimeUnmarshaller"
+            }
+		},
+	    "InitiateMultipartUploadInput" : {
+		  "partSize" : {
+		    "Type" : "long?",
+			"Marshaller" : "Amazon.Runtime.Internal.Util.StringUtils.FromLong",
+			"Unmarshaller" : "Amazon.Runtime.Internal.Transform.NullableLongUnmarshaller"
+		  }
+		},
+		"ListJobsInput" : {
+		  "limit" : {
+		    "Type" : "int?",
+			"Marshaller" : "Amazon.Runtime.Internal.Util.StringUtils.FromInt",
+			"Unmarshaller" : "Amazon.Runtime.Internal.Transform.NullableIntUnmarshaller"
+		  },
+		  "completed" : {
+		    "Type" : "bool?",
+			"Marshaller" : "Amazon.Runtime.Internal.Util.StringUtils.FromBool",
+			"Unmarshaller" : "Amazon.Runtime.Internal.Transform.NullableBoolUnmarshaller"
+		  }
+		},
+		"ListMultipartUploadsInput" : {
+		  "limit" : {
+		    "Type" : "int?",
+			"Marshaller" : "Amazon.Runtime.Internal.Util.StringUtils.FromInt",
+			"Unmarshaller" : "Amazon.Runtime.Internal.Transform.NullableIntUnmarshaller"
+		  }
+		},
+		"ListPartsInput" : {
+		  "limit" : {
+		    "Type" : "int?",
+			"Marshaller" : "Amazon.Runtime.Internal.Util.StringUtils.FromInt",
+			"Unmarshaller" : "Amazon.Runtime.Internal.Transform.NullableIntUnmarshaller"
+		  }
+		},
+		"ListPartsOutput" : {
+            "CreationDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.NullableDateTimeUnmarshaller"
+            },
+            "CompletionDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.NullableDateTimeUnmarshaller"
+            }
+		},
+		"ListVaultsInput" : {
+		  "limit" : {
+		    "Type" : "int?",
+			"Marshaller" : "Amazon.Runtime.Internal.Util.StringUtils.FromInt",
+			"Unmarshaller" : "Amazon.Runtime.Internal.Transform.NullableIntUnmarshaller"
+		  }
+		},
+		"UploadListElement" : {
+            "CreationDate": {
+                "Type": "DateTime?",
+                "Marshaller": "Amazon.Runtime.Internal.Util.StringUtils.FromDateTimeToISO8601WithOptionalMs",
+                "Unmarshaller": "Amazon.Runtime.Internal.Transform.NullableDateTimeUnmarshaller"
+            }
+		}
+	},
+	"generateComplexException" : true
+}

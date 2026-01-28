@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-THETARGE
+# Group: the-target-origin
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "The target origin of the window.postMessage() API is set to \"*\". This could allow for information disclosure due to the possibility of any origin allowed to receive the message." : IValidationArchitecture
+  ID: "SEMGREP-SEC-THETARGE"
+  DESCRIPTION: "The target origin of the window.postMessage() API is set to \"*\". This could allow for information disclosure due to the possibility of any origin allowed to receive the message."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$OBJECT.postMessage(...,\\u0027*\\u0027,...)\"}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$OBJECT.postMessage(...,\\u0027*\\u0027,...)\"}]}"
+
+  VIOLATIONS:
+    - "The target origin of the window.postMessage() API is set to \"*\". This could allow for information disclosure due to the possibility of any origin allowed to receive the message."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "The target origin of the window.postMessage() API is set to \"*\". This could allow for information disclosure due to the possibility of any origin allowed to receive the message. This can lead to security vulnerabilities. (the target origin)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "the-target-origin"
+
+END RULE

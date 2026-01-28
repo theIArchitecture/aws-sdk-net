@@ -1,0 +1,563 @@
+<#@ template language="C#" inherits="Generators.BaseGenerator" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Globalization" #>
+
+<#+
+    // Adds the neccesary namespaces for the marshaller
+protected void AddCommonUsingStatements()
+    {
+#>
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Xml.Serialization;
+
+using <#=this.Config.Namespace #>.Model;
+using Amazon.Runtime;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Transform;
+using Amazon.Runtime.Internal.Util;
+<#+
+    }
+#>
+
+<#+
+	// Only applicable for rest-json and rest-xml
+    // Generates code to add members to the header of the request
+    // If it's a custom marshaller then it calls the custom marshaller first
+	protected void ProcessHeaderMembers(string variableName, IEnumerable<Member> members, Shape structure)
+	{
+		foreach(var member in members)
+		{
+            if (structure != null && this.Config.ServiceModel.Customizations.ShapeModifiers.TryGetValue(structure.Name, out var modifier) && modifier.ExcludedMarshallingProperties.Contains(member.ModeledName))
+                continue;
+#>		
+            if (<#=variableName#>.IsSet<#=member.PropertyName#>()) 
+            {
+<#+
+            if (member.CustomMarshallerTransformation != null)
+            {
+#>
+				request.Headers["<#=member.MarshallLocationName#>"] = <#=member.CustomMarshallerTransformation#>(<#=variableName#>.<#=member.PropertyName#>);
+<#+        
+            }
+            else if (member.IsJsonValue)
+            {
+#>
+				request.Headers["<#=member.MarshallLocationName#>"] = Convert.ToBase64String(Encoding.UTF8.GetBytes(<#=variableName#>.<#=member.PropertyName#>));
+<#+
+            }
+            else
+            {
+                if (member.IsList)
+                {
+                    if(member.Shape.ListShape.IsMap || member.Shape.ListShape.IsList)
+                    {
+						throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
+							"Marshalling list of {0} as header param is not implemented.",
+							member.Shape.ListShape.Type));
+					}
+                    else if (member.ModelShape.ModelListShape.IsString || member.ModelShape.ModelListShape.IsEnum)
+                    {
+#>
+                        request.Headers["<#=member.MarshallLocationName#>"] = StringUtils.FromList(<#=variableName#>.<#=member.PropertyName#>);
+<#+
+                    }
+                    else
+                    {
+#>
+                        request.Headers["<#=member.MarshallLocationName#>"] = StringUtils.FromValueTypeList(<#=variableName#>.<#=member.PropertyName#>);
+<#+
+                    }
+                }
+                else if (member.IsMap)
+                {
+#>
+                //Map of headers with prefix "<#=member.MarshallLocationName#>".
+                foreach (var kvp<#=member.PropertyName#> in <#=variableName#>.<#=member.PropertyName#>)
+                {
+<#+ 
+                    // Dictionary<string, string>
+                    if (member.ModelShape.ValueShape.IsString)
+                    {
+#>
+                     request.Headers[$"<#=member.MarshallLocationName#>{kvp<#=member.PropertyName#>.Key}"] = kvp<#=member.PropertyName#>.Value;
+<#+
+                    }
+                    // Dictionary<string, List<string>>
+                    else if (member.ModelShape.ValueShape?.ListShape?.IsString == true)
+                    {
+#>
+                    request.Headers[$"<#=member.MarshallLocationName#>{kvp<#=member.PropertyName#>.Key}"] = string.Join(",", kvp<#=member.PropertyName#>.Value.ToArray());
+<#+
+                    }
+                    else
+                    {
+                        throw new InvalidDataException("[{member.ModelName}]: Invalid header map shapes.  Header Maps must have a value of either a string or a list of strings: {member.ModelShape.ValueShape.Name}");
+                    }
+#>
+                }
+<#+
+				}
+				else if(member.Shape.IsString)
+				{
+#>
+				request.Headers["<#=member.MarshallLocationName#>"] = <#=variableName#>.<#=member.PropertyName#>;
+<#+					
+				}
+                else
+                {
+#>
+				request.Headers["<#=member.MarshallLocationName#>"] = <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#>);
+<#+
+                }
+            }
+#>
+            }
+<#+
+        }
+	}
+    protected void ProcessHeaderMembers(string variableName, IEnumerable<Member> members)
+    {
+        ProcessHeaderMembers(variableName, members, null);
+    }
+
+	// Only applicable for rest-json and rest-xml
+    // Generates code to add the operation's requestURIMembers to the PathResources request dictionary
+	protected void ProcessUriMembers(string variableName, Operation operation)
+	{
+		foreach(var member in operation.RequestUriMembers)
+		{
+            bool isGreedy = false;
+            var marshallLocationName = operation.GetUriResourcePathTarget(member, out isGreedy);
+            if (member.model.Customizations.SkipUriPropertyValidations.Contains(member.PropertyName))
+            {
+            if (this.Config.ServiceId == "S3" && marshallLocationName == "{Bucket}")
+                continue;
+            // Not doing trim start for S3 even if the uri specifies greedy path matching because then we cannot retrieve an object with a leading slash.
+            // We don't need the TrimStart anymore  b/c we correctly split the resource path into segments based on the code
+            // here: https://github.com/aws/aws-sdk-net/blob/d4ac138db3288771c57dacdbdb96d800fc344fbd/sdk/src/Core/Amazon.Util/AWSSDKUtils.cs#L424-L428 , if it is greedy for signing, 
+            // and then join it back together as to not encode the /. Most likely, TrimStart was added before the path splitting was fixed up.
+
+            // TODO: Remove the TrimStart for all service
+		    if(isGreedy && this.Config.ServiceId != "S3")
+				{
+#>
+			request.AddPathResource("<#=marshallLocationName#>", <#=variableName#>.IsSet<#=member.PropertyName#>() ? <#=member.Shape.PrimitiveMarshaller(MarshallLocation.Uri)#>(<#=variableName#>.<#=member.PropertyName#>.TrimStart('/')) : string.Empty);
+<#+
+				}
+				else
+				{
+#>
+			request.AddPathResource("<#=marshallLocationName#>", <#=variableName#>.IsSet<#=member.PropertyName#>() ? <#=member.Shape.PrimitiveMarshaller(MarshallLocation.Uri)#>(<#=variableName#>.<#=member.PropertyName#>) : string.Empty);
+<#+
+				}
+
+            }
+            else
+            {
+                if (this.Config.ServiceId == "S3" && member.Shape.IsString && !this.Config.ServiceModel.S3RequestMarshallerThrowGenericExceptionList.Contains(operation.Name))
+                {
+#>
+            if (string.IsNullOrEmpty(<#=variableName#>.<#=member.PropertyName#>))
+                throw new System.ArgumentException("<#=member.PropertyName#> is a required property and must be set before making this call.", "<#=operation.Name#>Request.<#=member.PropertyName#>");
+<#+
+                }
+                else
+                {
+#>
+            if (!<#=variableName#>.IsSet<#=member.PropertyName#>())
+                throw new <#=this.Config.BaseException#>("Request object does not have required field <#=member.PropertyName#> set");
+<#+
+                }
+            if (this.Config.ServiceId == "S3" && marshallLocationName == "{Bucket}")
+                continue;
+            // Not doing trim start for S3 even if the uri specifies greedy path matching because then we cannot retrieve an object with a leading slash.
+            // We don't need the TrimStart anymore  b/c we correctly split the resource path into segments based on the code
+            // here: https://github.com/aws/aws-sdk-net/blob/d4ac138db3288771c57dacdbdb96d800fc344fbd/sdk/src/Core/Amazon.Util/AWSSDKUtils.cs#L424-L428 , if it is greedy for signing, 
+            // and then join it back together as to not encode the /. Most likely, TrimStart was added before the path splitting was fixed up.
+
+            // TODO: Remove the TrimStart for all service
+			if(isGreedy && this.Config.ServiceId != "S3")
+				{
+#>
+			request.AddPathResource("<#=marshallLocationName#>", <#=member.Shape.PrimitiveMarshaller(MarshallLocation.Uri)#>(<#=variableName#>.<#=member.PropertyName#>.TrimStart('/')));
+<#+
+				}
+				else
+				{
+#>
+			request.AddPathResource("<#=marshallLocationName#>", <#=member.Shape.PrimitiveMarshaller(MarshallLocation.Uri)#>(<#=variableName#>.<#=member.PropertyName#>));
+<#+
+				}
+            }
+		}
+	}
+
+	protected void ProcessRequestUri(Operation operation)
+	{
+		foreach(var staticQueryParam in operation.StaticQueryParameters)
+		{
+			if(staticQueryParam.Value != null)
+			{
+#>
+			request.AddSubResource("<#=staticQueryParam.Key#>", "<#=staticQueryParam.Value#>");
+<#+			
+			}
+			else
+			{
+#>
+			request.AddSubResource("<#=staticQueryParam.Key#>");
+<#+						
+			}
+		}
+	}
+#>
+<#+
+	// Only applicable for rest-json and rest-xml
+    // Generates code to add any operation query members to the query string for the request
+    // If the marshaller is customized, it marshalls the value before changing it to a string
+	protected void ProcessQueryStringMembers(string variableName, Operation operation)
+	{
+		if(operation.RequestHasQueryStringMembers)		
+		{
+            bool containsQueryParamMap = operation.RequestQueryStringMembers.Any(item => item.IsMap);
+            if(!containsQueryParamMap)
+            {
+                // Most services don't contain a query param map, and since the smithy spec specifies that if a query param map
+                // exists and a normal query param exists, we must ignore the query param map,
+                // we will separate these two cases out to different functions since handling queryparam maps + overwriting previous
+                // normal query param entries requires a lot more generated code.
+                ProcessQueryStringMembersNoMap(variableName,operation);
+            }
+            else
+            {
+
+			    foreach(var member in operation.RequestQueryStringMembers)
+			    {
+                    ProcessQueryStringMemberWithMap(3, member,variableName);
+                }
+#>
+<#+        
+			}
+		}
+	}
+#>
+<#+
+	// Only applicable for rest-json and rest-xml
+    // Generates code to add any operation query members to the query string for the request
+    // If the marshaller is customized, it marshalls the value before changing it to a string
+	protected void ProcessQueryStringMembersNoMap(string variableName, Operation operation)
+	{
+		if(operation.RequestHasQueryStringMembers)		
+		{
+			foreach(var member in operation.RequestQueryStringMembers)
+			{
+#>			
+			if (<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#+
+                if (member.CustomMarshallerTransformation != null)
+                {
+                // S3 uses the subresources collection instead of the parameters collection because object keys can contain 
+                // '?' making string-splitting of a resource path potentially hazardous
+                // see https://github.com/aws/aws-sdk-net/blob/d4ac138db3288771c57dacdbdb96d800fc344fbd/sdk/src/Core/Amazon.Runtime/Internal/DefaultRequest.cs#L188-L194 
+                    if (this.Config.ServiceId == "S3")
+                    {
+#>
+                request.AddSubResource("<#=member.MarshallLocationName#>", <#=member.CustomMarshallerTransformation#>(<#=variableName#>.<#=member.PropertyName#>));
+<#+
+                    }
+                    else
+                    {
+#>
+				request.Parameters.Add("<#=member.MarshallLocationName#>", <#=member.CustomMarshallerTransformation#>(<#=variableName#>.<#=member.PropertyName#>));
+<#+
+                    }
+                }
+                else if (member.IsList)
+                {
+                    if(member.Shape.ListShape.IsMap || member.Shape.ListShape.IsList)
+					{
+						throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
+							"Marshalling list of {0} as query string param is not implemented.",
+							member.Shape.ListShape.Type));
+					}
+
+                    if(member.Shape.ListShape.IsString)
+                    {
+#>
+                request.ParameterCollection.Add("<#=member.MarshallLocationName#>", <#=variableName#>.<#=member.PropertyName#>);
+<#+
+                    }
+                    else
+                    {
+#>
+                request.ParameterCollection.Add("<#=member.MarshallLocationName#>", <#=variableName#>.<#=member.PropertyName#>.ConvertAll<string>(item => <#=member.Shape.ListShape.PrimitiveMarshaller(MarshallLocation.QueryString)#>(item)));
+<#+
+                    }
+                }
+                else
+                {
+                // S3 uses the subresources collection instead of the parameters collection because object keys can contain 
+                // '?' making string-splitting of a resource path potentially hazardous
+                // see https://github.com/aws/aws-sdk-net/blob/d4ac138db3288771c57dacdbdb96d800fc344fbd/sdk/src/Core/Amazon.Runtime/Internal/DefaultRequest.cs#L188-L194 
+                    if (this.Config.ServiceId == "S3" && !this.Config.ServiceModel.S3AddParametersList.Contains(operation.Name))
+                    {
+#>
+				request.AddSubResource("<#=member.MarshallLocationName#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#>));
+<#+
+                    }
+                    else
+                    {
+#>
+                request.Parameters.Add("<#=member.MarshallLocationName#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#>));
+<#+			        }
+				}
+                if(member.IsIdempotent)
+	            {
+                    if (this.Config.ServiceId == "S3")
+                    {
+#>
+            else
+                request.AddSubResource("<#=member.MarshallLocationName#>", System.Guid.NewGuid().ToString());
+<#+
+                    }
+                    else
+                    {
+#>
+            else            
+                request.Parameters.Add("<#=member.MarshallLocationName#>", System.Guid.NewGuid().ToString());
+                
+<#+ 
+                    }
+	            }
+			}
+		}
+	}
+#>
+
+
+
+<#+
+    protected void ProcessQueryStringMemberWithMap(int level, Member member, string variableName)
+    {
+#>
+<#=new string(' ', level * 4)#>if (<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#=new string(' ', level * 4)#>{
+<#+
+        if (member.CustomMarshallerTransformation != null)
+        {
+#>
+<#=new string(' ', (level + 1) * 4)#>if (request.Parameters.ContainsKey("<#=member.MarshallLocationName#>"))
+<#=new string(' ', (level + 1) * 4)#>   request.Parameters.Remove("<#=member.MarshallLocationName#>"));
+<#=new string(' ', (level + 1) * 4)#>request.Parameters.Add("<#=member.MarshallLocationName#>", <#=member.CustomMarshallerTransformation#>(<#=variableName#>.<#=member.PropertyName#>));
+<#=new string(' ', level * 4)#>}
+<#+
+        } //end curly brace for if(member.CustomMarshallerTransformation!=null
+#>
+<#+
+        else if (member.IsMap)
+        {
+            if(member.Shape.ValueShape.IsMap)
+			{
+			throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
+				"Marshalling map with value type of {0} as query string param is not implemented.",
+			    member.Shape.ValueShape.Type));
+		    }
+#>
+<#=new string(' ', (level + 1) * 4)#>foreach(var kvp in <#=variableName#>.<#=member.PropertyName#>)
+<#=new string(' ', (level + 1) * 4)#>{
+<#+
+            if(member.Shape.ValueShape.IsList)
+            {
+                if(member.Shape.ValueShape.ListShape.IsString)
+                {
+#>
+<#=new string(' ', (level + 2) * 4)#>if(request.ParameterCollection.ContainsKey(kvp.Key))
+<#=new string(' ', (level + 2) * 4)#>   continue;
+<#=new string(' ', (level + 2) * 4)#>else
+<#=new string(' ', (level + 2) * 4)#>   request.ParameterCollection.Add(kvp.Key, kvp.Value);
+<#+             }//ending closing brace for (if(member.Shape.ValueShape.ListShape.IsString)
+                else
+                {
+#>
+<#=new string(' ', (level + 2) * 4)#>if(request.ParameterCollection.ContainsKey(kvp.Key))
+<#=new string(' ', (level + 2) * 4)#>   continue;
+<#=new string(' ', (level + 2) * 4)#>else
+<#=new string(' ', (level + 2) * 4)#>   request.ParameterCollection.Add(kvp.Key, kvp.Value.ConvertAll<string>(item => <#=member.Shape.ValueShape.ListShape.PrimitiveMarshaller(MarshallLocation.QueryString)#>(item)));
+<#+             }//ending closing brace for else
+
+            }//ending closing brach for if(member.Shape.ValueShape.IsList
+            else
+            {
+#>
+<#=new string(' ', (level + 2) * 4)#>if(request.Parameters.ContainsKey(kvp.Key))
+<#=new string(' ', (level + 2) * 4)#>   continue;
+<#=new string(' ', (level + 2) * 4)#>else
+<#=new string(' ', (level + 2) * 4)#>   request.Parameters.Add(kvp.Key, <#=member.Shape.ValueShape.PrimitiveMarshaller(MarshallLocation.QueryString)#>(kvp.Value));
+<#+
+            }//closing brace for else
+#>
+<#=new string(' ', (level + 1) * 4)#>}
+<#=new string(' ', level * 4)#>}
+<#+
+        } //ending closing brace for member.IsMap
+#>
+<#+
+        else if (member.IsList)
+        {
+            if(member.Shape.ListShape.IsMap || member.Shape.ListShape.IsList)
+		    {
+			    throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
+				    "Marshalling list of {0} as query string param is not implemented.",
+					member.Shape.ListShape.Type));
+			}
+            if(member.Shape.ListShape.IsString)
+            {
+#>
+<#=new string(' ', (level + 1) * 4)#>if(request.ParameterCollection.ContainsKey("<#=member.MarshallLocationName#>"))
+<#=new string(' ', (level + 1) * 4)#>   request.ParameterCollection.Remove("<#=member.MarshallLocationName#>");
+<#=new string(' ', (level + 1) * 4)#>request.ParameterCollection.Add("<#=member.MarshallLocationName#>", <#=variableName#>.<#=member.PropertyName#>);
+<#+         }//end of member.Shape.ListShape.IsString
+            else
+            {
+#>
+<#=new string(' ', (level + 1) * 4)#>if(request.ParameterCollection.ContainsKey("<#=member.MarshallLocationName#>"))
+<#=new string(' ', (level + 1) * 4)#>   request.ParameterCollection.Remove("<#=member.MarshallLocationName#>");
+<#=new string(' ', (level + 1) * 4)#>request.ParameterCollection.Add("<#=member.MarshallLocationName#>", <#=variableName#>.<#=member.PropertyName#>.ConvertAll<string>(item => <#=member.Shape.ListShape.PrimitiveMarshaller(MarshallLocation.QueryString)#>(item)));
+
+<#+         }//end of else
+#>
+<#=new string(' ', level * 4)#>}
+<#+
+        }//end of (member.isList) 
+        else // not a map or a list
+        {
+#>
+<#=new string(' ', (level + 1) * 4)#>if(request.Parameters.ContainsKey("<#=member.MarshallLocationName#>"))
+<#=new string(' ', (level + 1) * 4)#>   request.Parameters.Remove("<#=member.MarshallLocationName#>");
+<#=new string(' ', (level + 1) * 4)#>request.Parameters.Add("<#=member.MarshallLocationName#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#>));
+<#=new string(' ', level * 4)#>}
+<#+
+        }//end of else
+        if(member.IsIdempotent)
+        {
+#>
+<#=new string(' ', (level + 1) * 4)#> else
+<#=new string(' ', (level + 1) * 4)#>     request.Parameters.Add("<#=member.MarshallLocationName#>", System.Guid.NewGuid().ToString());
+<#+
+        }//end of member.IsIdempotent
+#>
+<#+//end of ProcessQueryStringMember function
+    }
+#>
+
+<#+
+    // Only applicable for rest-json and rest-xml
+    // Generates code to add the operation's hostPrefixMembers to the request's HostPrefix
+	protected void ProcessEndpointHostPrefixMembers(int level, string variableName, Operation operation)
+	{
+        if(operation.RequestHostPrefixMembers.Count() > 0)
+        {
+#>
+
+<#=new string(' ', (level) * 4)#>var hostPrefixLabels = new
+<#=new string(' ', (level) * 4)#>{
+<#+
+            foreach(var member in operation.RequestHostPrefixMembers)
+            {
+                
+#><#=new string(' ', (level + 1) * 4)#><#=member.ModeledName#> = <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#>),
+<#+
+            }     
+#>
+<#=new string(' ', (level) * 4)#>};
+
+<#+
+            foreach(var member in operation.RequestHostPrefixMembers)
+            {
+#>
+<#=new string(' ', (level) * 4)#>if (!HostPrefixUtils.IsValidLabelValue(hostPrefixLabels.<#=member.ModeledName#>))
+<#=new string(' ', (level + 1) * 4)#>throw new <#=this.Config.BaseException#>("<#=member.ModeledName#> can only contain alphanumeric characters and dashes and must be between 1 and 63 characters long.");		
+<#+
+            }     
+        }
+#>            
+<#=new string(' ', (level) * 4)#>request.HostPrefix = $"<#=operation.EndpointHostPrefix.Replace("{", "{hostPrefixLabels.")#>";
+<#+
+	}
+
+	protected void GenerateRequestChecksumHandling(Operation operation, string requestContent) 
+    {
+        if (operation.RequiresChecksumDuringMarshalling)
+        {
+            if (operation.ChecksumConfiguration != null && !string.IsNullOrEmpty(operation.ChecksumConfiguration.RequestAlgorithmMember))
+            {
+                // if a rename happened for the operation, look for the original operation in the model and see if a request algorithm member exists
+                string headerName = null;
+                if (this.Config.ServiceModel.DocumentRoot["operations"][operation.Name] != null && this.Config.ServiceModel.DocumentRoot["operations"][operation.Name][ServiceModel.HttpChecksumKey] != null)
+                {
+                    var memberData = this.Config.ServiceModel.DocumentRoot["shapes"][operation.Name + "Request"]["members"][operation.ChecksumConfiguration.RequestAlgorithmMember];
+                    headerName = (string)memberData["location"] == "header" ? (string)memberData["locationName"] : string.Empty;
+                }
+                else
+                {
+                    // For some S3 operations, in addition to the checksum specific headers (such as "x-amz-checksum-crc32"), there's also another
+                    // header which specifies the algorithm used: "x-amz-sdk-checksum-algorithm"
+                    // Even though S3 doesn't validate the latter, it's modeled and could be enforced in the future.
+                    var member = operation.RequestStructure.Members.FirstOrDefault(m => string.Equals(m.PropertyName, operation.ChecksumConfiguration.RequestAlgorithmMember));
+                    headerName = member.MarshallLocation == MarshallLocation.Header ? member.MarshallLocationName : string.Empty;
+                }
+#>
+                ChecksumUtils.SetChecksumData(
+                    request,
+                    publicRequest.<#=operation.ChecksumConfiguration.RequestAlgorithmMember#>,
+                    fallbackToMD5: false,
+                    isRequestChecksumRequired: <#=operation.ChecksumConfiguration.RequestChecksumRequired.ToString().ToLower()#>,
+                    headerName: "<#=headerName#>"
+                );
+<#+
+            }
+            // When checksum is configured without an algorithm member, let the SDK pick the best available option (without falling back to MD5).
+            else if (operation.ChecksumConfiguration != null && string.IsNullOrEmpty(operation.ChecksumConfiguration.RequestAlgorithmMember))
+            {
+#>
+                ChecksumUtils.SetChecksumData(request, checksumAlgorithm: null, fallbackToMD5: false, isRequestChecksumRequired: <#=operation.ChecksumConfiguration.RequestChecksumRequired.ToString().ToLower()#>);
+<#+
+            }
+            // This is the legacy trait ("httpChecksumRequired"), which does not use flexible checksums (just MD5).
+            // Only used by a few operations in the S3Control service model.
+            else if (operation.HttpChecksumRequired)
+            {
+#>
+                ChecksumUtils.SetChecksumData(request);
+<#+
+            }
+        }
+    }
+
+    /// <summary>
+    /// Retrieves compression algorithm trait and sets the first supported algorithm in the list based off the request object.
+    /// </summary>
+    /// <param name="operation">The operation of a service</param>
+    protected void SetCompressionAlgorithmEncoding(Operation operation) 
+    {
+        var compressionEncodings = operation.CompressionAlgorithmEncodings;
+        if (compressionEncodings != null) 
+        {
+            if(compressionEncodings.Encodings != null && compressionEncodings.Encodings.Count > 0)
+            {  
+                var encoding = compressionEncodings.Encodings.First();
+#>
+            CompressionAlgorithmUtils.SetCompressionAlgorithm(request, CompressionEncodingAlgorithm.<#=encoding.ToString()#>);
+<#+
+            }
+        }
+    }
+#>

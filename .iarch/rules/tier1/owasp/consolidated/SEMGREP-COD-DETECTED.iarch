@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-COD-DETECTED
+# Group: detected-an-if
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "Detected an if block that checks for the same condition on both branches (`$X`). The second condition check is useless as it is the same as the first, and therefore can be removed from the code," : IValidationArchitecture
+  ID: "SEMGREP-COD-DETECTED"
+  DESCRIPTION: "Detected an if block that checks for the same condition on both branches (`$X`). The second condition check is useless as it is the same as the first, and therefore can be removed from the code,"
+  SEVERITY: Warning
+  CATEGORY: "CodeQuality"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "CodeQuality"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"if ($X) {\\n    ...\\n} else if ($X) {\\n    ...\\n}\"}]}"
+
+  VIOLATIONS:
+    - "Detected an if block that checks for the same condition on both branches (`$X`). The second condition check is useless as it is the same as the first, and therefore can be removed from the code,"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Detected an if block that checks for the same condition on both branches (`$X`). The second condition check is useless as it is the same as the first, and therefore can be removed from the code, This can lead to security vulnerabilities. (detected an if)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "detected-an-if"
+
+END RULE

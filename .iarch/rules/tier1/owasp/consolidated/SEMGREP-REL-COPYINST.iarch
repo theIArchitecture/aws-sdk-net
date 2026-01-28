@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-REL-COPYINST
+# Group: copy-instructions-cannot
+# Merged from 1 individual language-specific rules
+# Languages: generic
+
+RULE "COPY instructions cannot copy from its own alias. The '$REF' alias is used before switching to a new image. If you meant to switch to a new image, include a new 'FROM' statement. Otherwise, remove the '--from=$REF' from the COPY statement." : IValidationArchitecture
+  ID: "SEMGREP-REL-COPYINST"
+  DESCRIPTION: "COPY instructions cannot copy from its own alias. The '$REF' alias is used before switching to a new image. If you meant to switch to a new image, include a new 'FROM' statement. Otherwise, remove the '--from=$REF' from the COPY statement."
+  SEVERITY: Fatal
+  CATEGORY: "Reliability"
+  APPLIES_TO: ["generic"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Reliability"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"generic\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"FROM $IMAGE:$TAG as $REF\\n...\\nCOPY --from=$REF\\n...\\nFROM\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"FROM $IMAGE:$TAG AS $REF\\n...\\nCOPY --from=$REF\\n...\\nFROM\\n\"}]}"
+
+  VIOLATIONS:
+    - "COPY instructions cannot copy from its own alias. The '$REF' alias is used before switching to a new image. If you meant to switch to a new image, include a new 'FROM' statement. Otherwise, remove the '--from=$REF' from the COPY statement."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "COPY instructions cannot copy from its own alias. The '$REF' alias is used before switching to a new image. If you meant to switch to a new image, include a new 'FROM' statement. Otherwise, remove the '--from=$REF' from the COPY statement. This can lead to security vulnerabilities. (copy instructions cannot)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://github.com/hadolint/hadolint/wiki/DL3023"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "copy-instructions-cannot"
+
+END RULE

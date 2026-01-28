@@ -1,0 +1,243 @@
+<#@ template language="C#" inherits="BaseResponseUnmarshaller" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#
+    AddLicenseHeader();
+
+    AddCommonUsingStatements();
+#>
+
+#pragma warning disable CS0612,CS0618
+namespace <#=this.Config.Namespace #>.Model.Internal.MarshallTransformations
+{
+    /// <summary>
+    /// Response Unmarshaller for <#=this.UnmarshallerBaseName #> operation
+    /// </summary>  
+<#
+     if (this.Config.ServiceId == "S3")
+     {
+#>
+    public partial class <#=this.UnmarshallerBaseName#>ResponseUnmarshaller : S3ReponseUnmarshaller
+<#
+     }
+     else
+     {
+#>
+    public partial class <#=this.UnmarshallerBaseName #>ResponseUnmarshaller : XmlResponseUnmarshaller
+<#
+     }
+#>
+    {
+        /// <summary>
+        /// Unmarshaller the response from the service to the response class.
+        /// </summary>  
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override AmazonWebServiceResponse Unmarshall(XmlUnmarshallerContext context)
+        {
+            <#=this.UnmarshallerBaseName #>Response response = new <#=this.Operation.Name #>Response();
+<#
+    var payload= this.Operation.ResponsePayloadMember;
+    var shouldMarshallPayload = (payload != null && payload.IsStructure);
+    var payloadIsStream = (payload != null && !shouldMarshallPayload);
+    if (this.Operation.ResponseHasBodyMembers || shouldMarshallPayload)
+    {
+        if (this.Operation.AllowEmptyResult)
+        {
+#>
+            if (context.ResponseData.IsSuccessStatusCode && context.ResponseData.ContentLength == 0)
+                return response;
+<#
+        }
+#>
+            UnmarshallResult(context,response);
+<#    
+	}
+    else if (payloadIsStream)
+    {
+        if (payload.Shape.IsStreaming)
+        {
+#>
+            response.<#=payload.PropertyName#> = context.Stream;
+<#
+        }
+        else if (payload.ModelShape.IsString)
+        {
+#>
+        using (var sr = new StreamReader(context.Stream))
+        {
+            response.<#=payload.PropertyName#> = sr.ReadToEnd();
+        }
+<#
+        }
+        else if (payload.ModelShape.IsMemoryStream)
+        {
+#>
+
+            var ms = new MemoryStream();
+            Amazon.Util.AWSSDKUtils.CopyStream(context.Stream, ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            if (ms.Length > 0)
+                response.<#=payload.PropertyName#> = ms;
+
+<#
+        }
+        else
+        {
+            // At this point, all valid configurations have been handled.  Valid use of payload is defined:
+            // https://awslabs.github.io/smithy/1.0/spec/core/http-traits.html#httppayload-trait
+            throw new Exception(
+                $"{payload.PropertyName} can not be a Payload as Type {payload.Shape.Type} is not a valid target for the httpPayload trait.  " +
+                "The httpPayload trait can be applied to structure members that target a string, blob, structure, union, document, set, map, or list.");
+        }
+    }
+	UnmarshallHeaders();
+	ProcessStatusCode();
+#>            
+            PostUnmarshallCustomization(context, response);
+            return response;
+		}		
+<#
+    if ( this.Operation.ResponseHasBodyMembers || shouldMarshallPayload)
+    {
+#>
+
+<#
+    	if (this.Operation.ResponseBodyMembers.Count == 0 && !shouldMarshallPayload)
+	    {
+#>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId="response")]
+<#
+	    }
+#>
+		private static void UnmarshallResult(XmlUnmarshallerContext context, <#=this.Operation.Name #>Response response)
+        {
+            int originalDepth = context.CurrentDepth;
+<#
+    if (this.Config.ServiceModel.Customizations.UnwrapXmlOutput(this.Structure.Name))
+    {
+#>
+            int targetDepth = 1;
+<#
+    }
+    else
+    {
+#>
+            int targetDepth = originalDepth + 1;
+<#
+        if (payload == null)
+        {
+#>
+			if (context.IsStartOfDocument) 
+				   targetDepth += 1;
+<#
+        }
+        if (payload != null && this.Config.ServiceModel.Customizations.FlattenShapes(this.Structure.Name).Contains(payload.ModeledName))
+        {
+#>
+            // payload has been flattened so that members of the result object are directly unmarshalled instead of unmarshalled
+            // as part of the container class, so look one level deeper
+            targetDepth += 1;
+<#
+        }
+    }
+#>
+            if (context.IsEmptyResponse)
+            {
+                return;
+            }
+            while (context.Read())
+            {
+				if (context.IsStartElement || context.IsAttribute)
+                {
+<#    
+        foreach (var member in this.Operation.ResponseBodyMembers)
+        {
+            ProcessResponseBodyOrStructureMembers(member, false, this.Structure);
+        }
+
+        if (shouldMarshallPayload)
+        {
+            ProcessResponseBodyOrStructureMembers(payload, false, this.Structure);
+        }
+#>
+				}
+				else if (context.IsEndElement && context.CurrentDepth < originalDepth)
+                {
+                    return;
+                }
+            }
+            return;
+        }
+<#
+    }
+#>  
+
+        /// <summary>
+        /// Unmarshaller error response to exception.
+        /// </summary>  
+        /// <param name="context"></param>
+        /// <param name="innerException"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        public override AmazonServiceException UnmarshallException(XmlUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
+        {
+<#
+    if (this.Config.ServiceId == "S3")
+    {
+#>
+            S3ErrorResponse errorResponse = S3ErrorResponseUnmarshaller.Instance.Unmarshall(context);
+<#
+    }
+    else
+    {
+#>
+            ErrorResponse errorResponse = XmlErrorResponseUnmarshaller.GetInstance().Unmarshall(context);
+<#
+    }
+#>
+            errorResponse.InnerException = innerException;
+            errorResponse.StatusCode = statusCode;
+
+            var responseBodyBytes = context.GetResponseBodyBytes();
+
+            using (var streamCopy = new MemoryStream(responseBodyBytes))
+            using (var contextCopy = new XmlUnmarshallerContext(streamCopy, false, null))
+            {
+<#
+    foreach (var exception in this.Operation.Exceptions)
+    {
+#>
+                if (errorResponse.Code != null && errorResponse.Code.Equals("<#=exception.Code #>"))
+                {
+                    return <#=exception.Name#>Unmarshaller.Instance.Unmarshall(contextCopy, errorResponse);
+                }
+<#
+    }
+#>
+            }
+<#
+    if (this.Config.ServiceId == "S3")
+    {
+#>
+            return base.ConstructS3Exception(context, errorResponse, innerException, statusCode);
+<#
+    }
+    else
+    {
+#>
+            return new <#=this.BaseException#>(errorResponse.Message, innerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, statusCode);
+<#
+    }
+#>
+        }
+
+        partial void PostUnmarshallCustomization(XmlUnmarshallerContext context, <#=this.Operation.Name #>Response response);
+
+<#
+    this.AddResponseSingletonMethod();
+#>
+    }
+}

@@ -1,0 +1,35 @@
+# Dependency Direction Enforcement Rule
+# Detects violations of explicit dependency direction rules using namespace pattern matching
+# Enforces forbidden dependencies (e.g., UI → DataAccess, Domain → Infrastructure)
+
+RULE "DEPENDENCY-DIRECTION-ENFORCEMENT" : IMetaArchitecture
+  ID: "ARCH-DEPENDENCY-DIRECTION-001"
+  DESCRIPTION: "Forbidden dependency detected - namespace pattern violates explicit dependency direction rules"
+  SEVERITY: Fatal
+  CATEGORY: "Architecture_Quality"
+  APPLIES_TO: ["csharp", "java", "python", "typescript", "javascript"]
+
+  PLUGIN:
+    ID: "architecture-validator"
+    SCOPE: "tree"
+    CONFIG:
+      validator: "DependencyDirection"
+      forbidden_dependencies: "[{\"from\":\"Amazon.S3.*\",\"to\":\"Amazon.DynamoDBv2.*\",\"message\":\"S3 service should not depend on DynamoDB service - services must be independent\"},{\"from\":\"Amazon.S3.*\",\"to\":\"Amazon.EC2.*\",\"message\":\"S3 service should not depend on EC2 service - services must be independent\"},{\"from\":\"Amazon.DynamoDBv2.*\",\"to\":\"Amazon.S3.*\",\"message\":\"DynamoDB service should not depend on S3 service - services must be independent\"},{\"from\":\"Amazon.*.Model.*\",\"to\":\"Amazon.*.Internal.*\",\"message\":\"Public Model types should not depend on Internal implementation details\"},{\"from\":\"Amazon.S3.Model.*\",\"to\":\"Amazon.S3.AmazonS3Client\",\"message\":\"Model types should not depend on client (dependency inversion violation)\"},{\"from\":\"Amazon.DynamoDBv2.Model.*\",\"to\":\"Amazon.DynamoDBv2.AmazonDynamoDBClient\",\"message\":\"Model types should not depend on client (dependency inversion violation)\"}]"
+
+  EDUCATION:
+    DOCS_URL: "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
+    WHY_IT_MATTERS: "This rule ensures that the architecture is explicit, allowing for better maintainability and flexibility. By following explicit dependency direction rules, developers can easily understand how different components interact with each other and make changes without causing unintended consequences"
+    BUSINESS_IMPACT: "Violating this rule can result in increased costs and reduced productivity due to the need for additional code changes or restructuring of the architecture. Additionally, it may lead to increased risk and compliance issues if the violation is not corrected promptly"
+    QUICK_FIX: "Reverse the dependency using dependency inversion principle - create an interface in the target namespace and implement it in the source namespace, or refactor to use an intermediate layer"
+
+  ARCHITECTURAL_CONTEXT:
+    PROJECT_TYPE: "SDK"
+    ARCHITECTURE_PATTERN: "Service_Oriented"
+    DESIGN_PRINCIPLES: ["Service_Independence", "Dependency_Inversion", "Service_Boundaries"]
+
+  VIOLATIONS:
+    - "Forbidden dependency: {{SOURCE_NAMESPACE}} should not depend on {{TARGET_NAMESPACE}}"
+    - "Dependency direction violation: {{FROM_PATTERN}} → {{TO_PATTERN}}"
+    - "Architectural boundary breach: Explicit dependency rule violated"
+
+END_RULE

@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-AVOIDUSI
+# Group: avoid-using-`torch.tensor()`
+# Merged from 1 individual language-specific rules
+# Languages: python
+
+RULE "Avoid using `torch.Tensor()` to directly create a tensor for efficiency and proper parsing" : IValidationArchitecture
+  ID: "SEMGREP-SEC-AVOIDUSI"
+  DESCRIPTION: "Avoid using `torch.Tensor()` to directly create a tensor for efficiency and proper parsing"
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["python"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"python\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"torch.Tensor(...)\"}]}"
+
+  VIOLATIONS:
+    - "Avoid using `torch.Tensor()` to directly create a tensor for efficiency and proper parsing"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Avoid using `torch.Tensor()` to directly create a tensor for efficiency and proper parsing This can lead to security vulnerabilities. (avoid using `torch.tensor()`)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://pytorch.org/docs/stable/tensors.html"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "avoid-using-`torch.tensor()`"
+
+END RULE

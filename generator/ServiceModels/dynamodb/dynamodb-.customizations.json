@@ -1,0 +1,26 @@
+{
+    "noArgOverloads": [
+        "ListTables"
+    ],
+    "emitIsSetProperties":{
+        "AttributeValue" : [
+            "BOOL",
+            "M",
+            "L",
+            "SS",
+            "BS",
+            "NS"
+        ],
+        "GetItemOutput" : [
+            "Item"
+        ],
+        "QueryInput" : [
+            "Limit"
+        ],
+        "ScanInput" : [
+            "Limit",
+            "Segment",
+            "TotalSegments"
+        ]
+    }
+}

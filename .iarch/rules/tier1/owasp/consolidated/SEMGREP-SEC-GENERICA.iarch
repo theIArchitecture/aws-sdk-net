@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-GENERICA
+# Group: generic-api-key
+# Merged from 1 individual language-specific rules
+# Languages: regex
+
+RULE "Generic API Key detected" : IValidationArchitecture
+  ID: "SEMGREP-SEC-GENERICA"
+  DESCRIPTION: "Generic API Key detected"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["regex"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"regex\":[{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"}]}"
+
+  VIOLATIONS:
+    - "Generic API Key detected"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Generic API Key detected This can lead to security vulnerabilities. (generic api key)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://github.com/dxa4481/truffleHogRegexes/blob/master/truffleHogRegexes/regexes.json"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "generic-api-key"
+
+END RULE

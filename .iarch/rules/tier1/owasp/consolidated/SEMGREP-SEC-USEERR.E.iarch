@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-USEERR.E
+# Group: use-err.error()-instead
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "Use err.Error() instead" : IValidationArchitecture
+  ID: "SEMGREP-SEC-USEERR.E"
+  DESCRIPTION: "Use err.Error() instead"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_3_OR_0\",\"Type\":0,\"Pattern\":\"if err != nil {\\n        ...\\n        \\u003C... fmt.Sprint(err) ...\\u003E\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_3_OR_1\",\"Type\":0,\"Pattern\":\"if err == nil {\\n        ...\\n        return ...\\n}\\n...\\n\\u003C...  fmt.Sprint(err) ...\\u003E\\n\"},{\"Name\":\"SEMGREP_PATTERN_3_OR_2\",\"Type\":0,\"Pattern\":\"if err != nil {\\n        ...\\n        \\u003C... fmt.Sprintf(\\u0022%s\\u0022, err) ...\\u003E\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_3_OR_3\",\"Type\":0,\"Pattern\":\"if err == nil {\\n        ...\\n        return ...\\n}\\n...\\n\\u003C...  fmt.Sprintf(\\u0022%s\\u0022, err) ...\\u003E\\n\"},{\"Name\":\"SEMGREP_PATTERN_3_OR_4\",\"Type\":0,\"Pattern\":\"if err != nil {\\n        ...\\n        \\u003C... fmt.Sprintf(\\u0022%v\\u0022, err) ...\\u003E\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_3_OR_5\",\"Type\":0,\"Pattern\":\"if err == nil {\\n        ...\\n        return ...\\n}\\n...\\n\\u003C...  fmt.Sprintf(\\u0022%v\\u0022, err) ...\\u003E\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "Use err.Error() instead"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Use err.Error() instead This can lead to security vulnerabilities. (use err.error() instead)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "use-err.error()-instead"
+
+END RULE

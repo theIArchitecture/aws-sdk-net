@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-CARET(^)
+# Group: caret-(^)-is
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "Caret (^) is not exponentiation" : IValidationArchitecture
+  ID: "SEMGREP-SEC-CARET(^)"
+  DESCRIPTION: "Caret (^) is not exponentiation"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"10 ^ $X\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"2 ^ $X\"}]}]}"
+
+  VIOLATIONS:
+    - "Caret (^) is not exponentiation"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Caret (^) is not exponentiation This can lead to security vulnerabilities. (caret (^) is)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "caret-(^)-is"
+
+END RULE

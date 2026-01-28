@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-THEPACKA
+# Group: the-package-`net/http/cgi`
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "The package `net/http/cgi` is on the import blocklist.  The package is vulnerable to httpoxy attacks (CVE-2015-5386). It is recommended to use `net/http` or a web framework to build a web application instead." : IValidationArchitecture
+  ID: "SEMGREP-SEC-THEPACKA"
+  DESCRIPTION: "The package `net/http/cgi` is on the import blocklist.  The package is vulnerable to httpoxy attacks (CVE-2015-5386). It is recommended to use `net/http` or a web framework to build a web application instead."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_AND_0\",\"Type\":1,\"Pattern\":\"import \\u0022net/http/cgi\\u0022\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_AND_1\",\"Type\":0,\"Pattern\":\"cgi.$FUNC(...)\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "The package `net/http/cgi` is on the import blocklist.  The package is vulnerable to httpoxy attacks (CVE-2015-5386). It is recommended to use `net/http` or a web framework to build a web application instead."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "The package `net/http/cgi` is on the import blocklist.  The package is vulnerable to httpoxy attacks (CVE-2015-5386). It is recommended to use `net/http` or a web framework to build a web application instead. This can lead to security vulnerabilities. (the package `net/http/cgi`)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://godoc.org/golang.org/x/crypto/sha3"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "the-package-`net/http/cgi`"
+
+END RULE

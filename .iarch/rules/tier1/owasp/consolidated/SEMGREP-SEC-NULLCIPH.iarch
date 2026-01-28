@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-NULLCIPH
+# Group: nullcipher-was-detected.
+# Merged from 1 individual language-specific rules
+# Languages: java
+
+RULE "NullCipher was detected. This will not encrypt anything; the cipher text will be the same as the plain text. Use a valid, secure cipher: Cipher.getInstance(\"AES/CBC/PKCS7PADDING\"). See https://owasp.org/www-community/Using_the_Java_Cryptographic_Extensions for more information." : IValidationArchitecture
+  ID: "SEMGREP-SEC-NULLCIPH"
+  DESCRIPTION: "NullCipher was detected. This will not encrypt anything; the cipher text will be the same as the plain text. Use a valid, secure cipher: Cipher.getInstance(\"AES/CBC/PKCS7PADDING\"). See https://owasp.org/www-community/Using_the_Java_Cryptographic_Extensions for more information."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"new NullCipher(...);\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"new javax.crypto.NullCipher(...);\"}]}]}"
+
+  VIOLATIONS:
+    - "NullCipher was detected. This will not encrypt anything; the cipher text will be the same as the plain text. Use a valid, secure cipher: Cipher.getInstance(\"AES/CBC/PKCS7PADDING\"). See https://owasp.org/www-community/Using_the_Java_Cryptographic_Extensions for more information."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "NullCipher was detected. This will not encrypt anything; the cipher text will be the same as the plain text. Use a valid, secure cipher: Cipher.getInstance(\"AES/CBC/PKCS7PADDING\"). See https://owasp.org/www-community/Using_the_Java_Cryptographic_Extensions for more information. This can lead to security vulnerabilities. (nullcipher was detected.)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "nullcipher-was-detected."
+
+END RULE

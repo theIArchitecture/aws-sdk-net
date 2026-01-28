@@ -1,0 +1,3 @@
+# Exclude large FFI main DLL (downloaded from GitHub release by workflow)
+ffi_main.dll
+ffi_main_working.dll

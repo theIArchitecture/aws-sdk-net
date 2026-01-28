@@ -1,0 +1,30 @@
+{
+    "noArgOverloads": [
+        "DescribeAccountLimits",
+        "DescribeAdjustmentTypes",
+        "DescribeAutoScalingGroups",
+        "DescribeAutoScalingInstances",
+        "DescribeAutoScalingNotificationTypes",
+        "DescribeLaunchConfigurations",
+        "DescribeMetricCollectionTypes",
+        "DescribeNotificationConfigurations",
+        "DescribePolicies",
+        "DescribeScalingActivities",
+        "DescribeScalingProcessTypes",
+        "DescribeScheduledActions",
+        "DescribeTags",
+        "DescribeTerminationPolicyTypes"
+    ],
+    "shapeModifiers": {
+        "AdjustmentType": {
+            "modify": [
+                {
+                    "AdjustmentType": { "emitPropertyName": "Type" }
+                }
+            ]
+        },
+        "MinAdjustmentStep": {
+            "deprecatedMessage": "Available for backward compatibility. Use MinAdjustmentMagnitude instead."
+        }
+    }
+}

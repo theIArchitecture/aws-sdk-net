@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-IO.READF
+# Group: io.readfull()-returns-err
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "io.ReadFull() returns err == nil iff n == len(slice)" : IValidationArchitecture
+  ID: "SEMGREP-SEC-IO.READF"
+  DESCRIPTION: "io.ReadFull() returns err == nil iff n == len(slice)"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$N, $ERR = io.ReadFull($R, $SLICE)\\nif $ERR != nil || $N != len($SLICE) {\\n        ...\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$N, $ERR = io.ReadFull($R, $SLICE)\\nif $N != len($SLICE) || $ERR != nil {\\n        ...\\n}\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "io.ReadFull() returns err == nil iff n == len(slice)"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "io.ReadFull() returns err == nil iff n == len(slice) This can lead to security vulnerabilities. (io.readfull() returns err)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "io.readfull()-returns-err"
+
+END RULE

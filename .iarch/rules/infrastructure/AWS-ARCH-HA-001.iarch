@@ -1,0 +1,76 @@
+RULE "AWS RDS Multi-AZ Deployment" : IHealerArchitecture
+
+ID: "AWS-ARCH-HA-001"
+VERSION: "1.0.0"
+
+DESCRIPTION: "RDS database instances must enable Multi-AZ deployment for high availability and automatic failover"
+
+SEVERITY: Fatal
+
+CATEGORY: "AWS_Infrastructure_Architecture"
+
+LAYER: BASE
+
+APPLIES_TO: ["cloudformation", "terraform", "aws"]
+
+EDUCATION:
+  DOCS_URL: "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+
+
+  BUSINESS_IMPACT: "Database unavailability causes:\n- Complete application outage\n- Revenue loss during downtime ($10K-100K+/hour for e-commerce)\n- SLA violations and customer refunds\n- Damage to brand reputation\n- Potential data loss if backups aren't recent"
+
+  QUICK_FIX: "Enable Multi-AZ on RDS instance:\n1. Set MultiAZ: true in DBInstance Properties\n2. AWS automatically provisions synchronous standby replica\n3. Automatic failover in 1-2 minutes during AZ failure\n4. No application code changes required"
+
+  ARCHITECTURAL_PATTERN: "All production RDS instances should use Multi-AZ deployment. Development/test environments can use single-AZ to save costs. Multi-AZ is transparent to applications - connection string remains the same."
+
+  ALTERNATIVES: "- Use Aurora with multi-master for even better availability\n- Implement application-level database failover (complex, not recommended)\n- Use read replicas for read scaling (does NOT provide automatic failover)"
+
+# Infrastructure plugin-based validation
+PLUGIN:
+  ID: "cloudformation-validator"
+  CONFIG:
+    check: "rds_multi_az"
+
+# Auto-healing
+FIXES:
+  PLUGIN:
+    ID: "cloudformation-healer"
+    CONFIG:
+      enable_multi_az: true
+
+  TEACHING: "Enabled Multi-AZ on RDS instance. AWS will provision a synchronous standby replica in a different availability zone. Failover is automatic and typically completes in 60-120 seconds."
+
+EXAMPLES:
+  VIOLATION: |
+    # CloudFormation template
+    Resources:
+      ProductionDB:
+        Type: AWS::RDS::DBInstance
+        Properties:
+          DBInstanceIdentifier: prod-db
+          DBInstanceClass: db.t3.medium
+          Engine: postgres
+          AllocatedStorage: 100
+          # ❌ VIOLATION: MultiAZ not enabled (or set to false)
+
+  COMPLIANT: |
+    # CloudFormation template
+    Resources:
+      ProductionDB:
+        Type: AWS::RDS::DBInstance
+        Properties:
+          DBInstanceIdentifier: prod-db
+          DBInstanceClass: db.t3.medium
+          Engine: postgres
+          AllocatedStorage: 100
+          MultiAZ: true
+          # ✅ COMPLIANT: Multi-AZ enabled
+
+TAGS:
+  - AWS
+  - Infrastructure
+  - RDS
+  - HighAvailability
+  - DisasterRecovery
+
+END RULE

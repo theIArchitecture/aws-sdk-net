@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-ACOOKIEW
+# Group: a-cookie-was
+# Merged from 1 individual language-specific rules
+# Languages: java
+
+RULE "A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'" : IValidationArchitecture
+  ID: "SEMGREP-SEC-ACOOKIEW"
+  DESCRIPTION: "A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'"
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_OR_0\",\"Type\":0,\"Pattern\":\"$COOKIE.setSecure(false);\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_1\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_OR_1_AND_2\",\"Type\":0,\"Pattern\":\"$RESPONSE.addCookie($COOKIE);\"}]}]}]}"
+
+  VIOLATIONS:
+    - "A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);' This can lead to security vulnerabilities. (a cookie was)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A05_2021-Security_Misconfiguration"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "a-cookie-was"
+
+END RULE

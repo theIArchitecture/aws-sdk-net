@@ -1,0 +1,796 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netstandard2.0;netcoreapp3.1;net8.0;net472</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netstandard2.0;netcoreapp3.1;net8.0</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>ServiceClientGenerator</RootNamespace>
+    <AssemblyName>ServiceClientGeneratorLib</AssemblyName>
+    <PackageId>ServiceClientGeneratorLib</PackageId>
+    <RootNamespace>ServiceClientGenerator</RootNamespace>
+
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <SignAssembly>true</SignAssembly>
+    <NoWarn>CS1591;CS1572;CS1573;CS1570;CS0109;CS0252</NoWarn>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup> 
+    <Choose>
+    <When Condition=" '$(AWSKeyFile)' == '' ">
+      <PropertyGroup>
+        <AssemblyOriginatorKeyFile>../../sdk/awssdk.dll.snk</AssemblyOriginatorKeyFile>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <AssemblyOriginatorKeyFile>$(AWSKeyFile)</AssemblyOriginatorKeyFile>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Update="Generators/CodeAnalysis/CodeAnalysisAssemblyInfo.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CodeAnalysisAssemblyInfo.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/CodeAnalysis/CodeAnalysisSolutionFile.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CodeAnalysisSolutionFile.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/CodeAnalysis/PropertyValueAssignmentAnalyzer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PropertyValueAssignmentAnalyzer.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/CodeAnalysis/VsixManifest.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VsixManifest.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/CodeAnalysis/VsixTestProfileFile.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>VsixTestProfileFile.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Endpoints/PartitionsTemplate.cs">
+      <DependentUpon>PartitionsTemplate.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators/Endpoints/EndpointParameters.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointParameters.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Endpoints/EndpointProvider.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointProvider.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Endpoints/EndpointProviderTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointProviderTests.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Endpoints/EndpointResolver.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointResolver.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Examples/ExampleCode.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExampleCode.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Examples/ExampleMetadata.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExampleMetadata.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/AWSQueryExceptionUnmarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AWSQueryExceptionUnmarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/EndpointDiscoveryMarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointDiscoveryMarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/JsonRPCExceptionUnmarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JsonRPCExceptionUnmarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/RestXmlExceptionUnmarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RestXmlExceptionUnmarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/NuGet/CoreNuspec.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreNuspec.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/NuGet/NuGetPackageReadmeSection.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NuGetPackageReadmeSection.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/CodeAnalysis/CodeAnalysisProjectFile.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CodeAnalysisProjectFile.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/ProjectFiles/SolutionFileBclAndNetStandard.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SolutionFileBclAndNetStandard.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/ProjectFiles/VS2017ProjectFile.cs">
+      <DependentUpon>VS2017ProjectFile.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/BasePaginator.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BasePaginator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/BasePaginatorInterface.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BasePaginatorInterface.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/CoreAssemblyInfo.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreAssemblyInfo.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/DefaultConfiguration.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DefaultConfiguration.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/DefaultConfigurationModeGenerator.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DefaultConfigurationModeGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/EndpointsGenerator.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointsGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/Exceptions/EventStreamExceptions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EventStreamExceptions.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/InternalSDKUtils.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>InternalSDKUtils.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/AssemblyInfo.cs">
+      <DependentUpon>AssemblyInfo.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/S3EnumerationsGenerator.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>S3EnumerationsGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServiceMetadata.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServiceMetadata.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServicePaginatorFactory.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServicePaginatorFactory.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServicePaginatorFactoryInterface.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServicePaginatorFactoryInterface.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/AWSQueryEC2ResponseUnmarshaller.cs">
+      <DependentUpon>AWSQueryEC2ResponseUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/AWSQueryRequestMarshaller.cs">
+      <DependentUpon>AWSQueryRequestMarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/AWSQueryResponseUnmarshaller.cs">
+      <DependentUpon>AWSQueryResponseUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/AWSQueryStructureUnmarshaller.cs">
+      <DependentUpon>AWSQueryStructureUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/BaseGenerator.cs">
+      <DependentUpon>BaseGenerator.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/BaseRequest.cs">
+      <DependentUpon>BaseRequest.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/BaseRequestMarshaller.cs">
+      <DependentUpon>BaseRequestMarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/BaseResponseUnmarshaller.cs">
+      <DependentUpon>BaseResponseUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/BaseServiceException.cs">
+      <DependentUpon>BaseServiceException.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/TestFiles/EndpointDiscoveryMarshallingTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EndpointDiscoveryMarshallingTests.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/JsonRPCRequestMarshaller.cs">
+      <DependentUpon>JsonRPCRequestMarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/JsonRPCResponseUnmarshaller.cs">
+      <DependentUpon>JsonRPCResponseUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/JsonRPCStructureMarshaller.cs">
+      <DependentUpon>JsonRPCStructureMarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/JsonRPCStructureUnmarshaller.cs">
+      <DependentUpon>JsonRPCStructureUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/LegacyResponseClass.cs">
+      <DependentUpon>LegacyResponseClass.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/TestFiles/PaginatorTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PaginatorTests.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/Marshallers/RestXmlRequestMarshaller.cs">
+      <DependentUpon>RestXmlRequestMarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/Marshallers/RestXmlStructureUnmarshaller.cs">
+      <DependentUpon>RestXmlStructureUnmarshaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/BasePaginator.cs">
+      <DependentUpon>BasePaginator.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/BasePaginatorInterface.cs">
+      <DependentUpon>BasePaginatorInterface.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServicePaginatorFactory.cs">
+      <DependentUpon>ServicePaginatorFactory.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServicePaginatorFactoryInterface.cs">
+      <DependentUpon>ServicePaginatorFactoryInterface.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators\AuthResolvers\ModeledResolver.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ModeledResolver.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\CodeAnalysis\NullCollectionInitializerAnalyzer.cs">
+      <DependentUpon>NullCollectionInitializerAnalyzer.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators\Marshallers\BaseMarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BaseMarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\Marshallers\EventStreamPublisherMarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EventStreamPublisherMarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\Marshallers\RestXmlResponseUnmarshaller.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RestXmlResponseUnmarshaller.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\Marshallers\CborExceptionUnmarshaller.cs">
+      <DependentUpon>CborExceptionUnmarshaller.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators\Marshallers\CborResponseUnmarshaller.cs">
+      <DependentUpon>CborResponseUnmarshaller.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators\Marshallers\CborStructureMarshaller.cs">
+      <DependentUpon>CborStructureMarshaller.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators\Marshallers\CborStructureUnmarshaller.cs">
+      <DependentUpon>CborStructureUnmarshaller.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators\Marshallers\CborRequestMarshaller.cs">
+      <DependentUpon>CborRequestMarshaller.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Generators\SourceFiles\EventCollectionAddImplementation.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EventCollectionAddImplementation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\SourceFiles\EventCollectionInterface.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EventCollectionInterface.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\SourceFiles\EventStreamOutputGenerator.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EventStreamOutputGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\SourceFiles\ServiceClientsNetFramework.cs">
+      <DependentUpon>ServiceClientsNetFramework.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServiceClientsNetStandard.cs">
+      <DependentUpon>ServiceClientsNetStandard.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServiceConfig.cs">
+      <DependentUpon>ServiceConfig.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServiceEnumerations.cs">
+      <DependentUpon>ServiceEnumerations.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators\SourceFiles\ServiceInterfaceNetFramework.cs">
+      <DependentUpon>ServiceInterfaceNetFramework.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/ServiceInterfaceNetStandard.cs">
+      <DependentUpon>ServiceInterfaceNetStandard.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/TestFiles/SimpleConstructorTests.cs">
+      <DependentUpon>SimpleConstructorTests.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/TestFiles/SimpleMethodTests.cs">
+      <DependentUpon>SimpleMethodTests.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/StructureGenerator.cs">
+      <DependentUpon>StructureGenerator.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/StructureGenerator.extension.cs">
+      <DependentUpon>StructureGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators/SourceFiles/WrappingResultGenerator.cs">
+      <DependentUpon>WrappingResultGenerator.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Update="Generators/NuGet/Nuspec.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Nuspec.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generators\SourceFiles\AmazonS3RetryPolicy.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AmazonS3RetryPolicy.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Generators/Component/Component.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>Component.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Component/Details.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>Details.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Component/GettingStarted.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>GettingStarted.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Endpoints/PartitionsTemplate.tt">
+      <LastGenOutput>PartitionsTemplate.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators/Endpoints/EndpointProvider.tt">
+      <LastGenOutput>EndpointProvider.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators/Endpoints/EndpointParameters.tt">
+      <LastGenOutput>EndpointParameters.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators/Endpoints/EndpointProviderTests.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EndpointProviderTests.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Endpoints/EndpointResolver.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EndpointResolver.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Endpoints/RestMarshallingTests.tt">
+      <LastGenOutput>RestMarshallingTests.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators/Marshallers/AWSQueryExceptionUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AWSQueryExceptionUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/EndpointDiscoveryMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EndpointDiscoveryMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/JsonRPCExceptionUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JsonRPCExceptionUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/RestXmlExceptionUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>RestXmlExceptionUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/NuGet/CoreNuspec.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CoreNuspec.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/BasePaginator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BasePaginator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/BasePaginatorInterface.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BasePaginatorInterface.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/CoreAssemblyInfo.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CoreAssemblyInfo.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/DefaultConfiguration.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>DefaultConfiguration.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/DefaultConfigurationModeGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>DefaultConfigurationModeGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/EventStreamInterfaces.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EventStreamInterfaces.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/Exceptions/EventStreamExceptions.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EventStreamExceptions.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/InternalSDKUtils.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>InternalSDKUtils.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/AssemblyInfo.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/S3EnumerationsGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>S3EnumerationsGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServiceMetadata.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceMetadata.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServicePaginatorFactory.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServicePaginatorFactory.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServicePaginatorFactoryInterface.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServicePaginatorFactoryInterface.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/EndpointsGenerator.tt">
+      <LastGenOutput>EndpointsGenerator.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators/Marshallers/AWSQueryEC2ResponseUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AWSQueryEC2ResponseUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/AWSQueryRequestMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AWSQueryRequestMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/AWSQueryResponseUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AWSQueryResponseUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/AWSQueryStructureUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AWSQueryStructureUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/BaseGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BaseGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/BaseMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BaseMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/BaseRequest.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BaseRequest.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/BaseRequestMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BaseRequestMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/BaseResponseUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BaseResponseUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/BaseServiceException.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>BaseServiceException.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/TestFiles/EndpointDiscoveryMarshallingTests.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EndpointDiscoveryMarshallingTests.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/JsonRPCRequestMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JsonRPCRequestMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/JsonRPCResponseUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JsonRPCResponseUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/JsonRPCStructureMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JsonRPCStructureMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/JsonRPCStructureUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JsonRPCStructureUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/LegacyResponseClass.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>LegacyResponseClass.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/TestFiles/PaginatorTests.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PaginatorTests.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/RestXmlRequestMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>RestXmlRequestMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/RestXmlResponseUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>RestXmlResponseUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Marshallers/RestXmlStructureUnmarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>RestXmlStructureUnmarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\AuthResolvers\ModeledResolver.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ModeledResolver.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\CodeAnalysis\NullCollectionInitializerAnalyzer.tt">
+      <LastGenOutput>NullCollectionInitializerAnalyzer.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\Marshallers\EventStreamPublisherMarshaller.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EventStreamPublisherMarshaller.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\Marshallers\CborExceptionUnmarshaller.tt">
+      <LastGenOutput>CborExceptionUnmarshaller.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\Marshallers\CborRequestMarshaller.tt">
+      <LastGenOutput>CborRequestMarshaller.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\Marshallers\CborResponseUnmarshaller.tt">
+      <LastGenOutput>CborResponseUnmarshaller.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\Marshallers\CborStructureMarshaller.tt">
+      <LastGenOutput>CborStructureMarshaller.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\Marshallers\CborStructureUnmarshaller.tt">
+      <LastGenOutput>CborStructureUnmarshaller.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\Marshallers\CborRequestMarshaller.tt">
+      <LastGenOutput>CborRequestMarshaller.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
+    <None Update="Generators\SourceFiles\EventCollectionAddImplementation.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EventCollectionAddImplementation.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\SourceFiles\EventCollectionInterface.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EventCollectionInterface.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\SourceFiles\ServiceClientsNetFramework.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceClientsNetFramework.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServiceClientsNetStandard.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceClientsNetStandard.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServiceConfig.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceConfig.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServiceEnumerations.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceEnumerations.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\SourceFiles\ServiceInterfaceNetFramework.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceInterfaceNetFramework.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/ServiceInterfaceNetStandard.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ServiceInterfaceNetStandard.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/TestFiles/SimpleConstructorTests.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>SimpleConstructorTests.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/TestFiles/SimpleMethodTests.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>SimpleMethodTests.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/StructureGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>StructureGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/WrappingResultGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>WrappingResultGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/NuGet/Nuspec.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>Nuspec.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Generators/CodeAnalysis/CodeAnalysisAssemblyInfo.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CodeAnalysisAssemblyInfo.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/CodeAnalysis/CodeAnalysisSolutionFile.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CodeAnalysisSolutionFile.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/CodeAnalysis/PropertyValueAssignmentAnalyzer.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PropertyValueAssignmentAnalyzer.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/CodeAnalysis/VsixManifest.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>VsixManifest.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/CodeAnalysis/VsixTestProfileFile.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>VsixTestProfileFile.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/ProjectFiles/VS2017ProjectFile.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>VS2017ProjectFile.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Examples/ExampleCode.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ExampleCode.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/Examples/ExampleMetadata.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ExampleMetadata.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/NuGet/NuGetPackageReadmeSection.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>NuGetPackageReadmeSection.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/CodeAnalysis/CodeAnalysisProjectFile.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CodeAnalysisProjectFile.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Generators/ProjectFiles/SolutionFileBclAndNetStandard.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>SolutionFileBclAndNetStandard.cs</LastGenOutput>
+    </None>
+    <None Update="Generators/SourceFiles/EventStreamOutputGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>EventStreamOutputGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Generators\SourceFiles\AmazonS3RetryPolicy.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AmazonS3RetryPolicy.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	  <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+	  <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+	<PackageReference Include="System.CodeDom" Version="6.0.0" />
+  </ItemGroup>
+</Project>

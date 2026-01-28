@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-DETECTED
+# Group: detected-the-use
+# Merged from 2 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "Detected the use of a regular expression `$REDOS` which appears to be vulnerable to a Regular expression Denial-of-Service (ReDoS). For this reason, it is recommended to review the regex and ensure it is not vulnerable to catastrophic backtracking, and if possible use a library which offers default safety against ReDoS vulnerabilities." : IValidationArchitecture
+  ID: "SEMGREP-SEC-DETECTED"
+  DESCRIPTION: "Detected the use of a regular expression `$REDOS` which appears to be vulnerable to a Regular expression Denial-of-Service (ReDoS). For this reason, it is recommended to review the regex and ensure it is not vulnerable to catastrophic backtracking, and if possible use a library which offers default safety against ReDoS vulnerabilities."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":1,\"Pattern\":\"function ... (..., $ARG,...) {...}\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":0,\"Pattern\":\"require(...)\"}]},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"new RegExp(/$REDOS/,...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"new RegExp(\\u0022$REDOS\\u0022,...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_2\",\"Type\":0,\"Pattern\":\"/$REDOS/.test(...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_3\",\"Type\":0,\"Pattern\":\"\\u0022$REDOS\\u0022.test(...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_4\",\"Type\":0,\"Pattern\":\"$X.match(/$REDOS/)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_5\",\"Type\":0,\"Pattern\":\"$X.match(\\u0022$REDOS\\u0022)\\n\"}]}],\"typescript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":1,\"Pattern\":\"function ... (..., $ARG,...) {...}\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":0,\"Pattern\":\"require(...)\"}]},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"new RegExp(/$REDOS/,...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"new RegExp(\\u0022$REDOS\\u0022,...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_2\",\"Type\":0,\"Pattern\":\"/$REDOS/.test(...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_3\",\"Type\":0,\"Pattern\":\"\\u0022$REDOS\\u0022.test(...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_4\",\"Type\":0,\"Pattern\":\"$X.match(/$REDOS/)\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_5\",\"Type\":0,\"Pattern\":\"$X.match(\\u0022$REDOS\\u0022)\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "Detected the use of a regular expression `$REDOS` which appears to be vulnerable to a Regular expression Denial-of-Service (ReDoS). For this reason, it is recommended to review the regex and ensure it is not vulnerable to catastrophic backtracking, and if possible use a library which offers default safety against ReDoS vulnerabilities."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Detected the use of a regular expression `$REDOS` which appears to be vulnerable to a Regular expression Denial-of-Service (ReDoS). For this reason, it is recommended to review the regex and ensure it is not vulnerable to catastrophic backtracking, and if possible use a library which offers default safety against ReDoS vulnerabilities. This can lead to security vulnerabilities. (detected the use)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 2
+    SOURCE_GROUP: "detected-the-use"
+
+END RULE

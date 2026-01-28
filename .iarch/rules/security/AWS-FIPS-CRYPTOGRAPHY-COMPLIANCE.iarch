@@ -1,0 +1,295 @@
+# AWS SDK FIPS 140-2 Cryptography Compliance Rule
+# Based on Amazon's actual CustomRoslynAnalyzers: CR1000 (MD5) and CR1001 (HashAlgorithm)
+# Enforces FIPS 140-2 compliance for government and enterprise AWS applications
+# Prevents MD5, SHA1, and non-deterministic hash algorithm usage
+
+RULE "AWS-FIPS-CRYPTOGRAPHY-VIOLATION" : IHealerArchitecture
+  ID: "AWS-FIPS-CRYPTO-001"
+  DESCRIPTION: "Non-FIPS compliant cryptographic algorithm detected - violates AWS SDK government compliance requirements"
+  SEVERITY: Fatal
+  CATEGORY: "AWS_FIPS_SecurityCompliance"
+  APPLIES_TO: ["csharp", "java", "python", "typescript"]
+
+  # ARCHITECTURAL SILOS - Global context available across all layers
+  ARCHITECTURAL_CONTEXT:
+    PROJECT_TYPE: "AWS_FIPS_APPLICATION"
+    COMPLIANCE_REQUIREMENTS: ["FIPS_140_2", "Government_Grade", "DoD_Approved", "SOC2", "Federal_Standards"]
+    ORGANIZATION_STANDARDS: ["AWS_Security_Best_Practices", "NIST_Guidelines", "Federal_Cryptography"]
+    TECHNOLOGY_STACK: ["dotnet", "java", "python", "typescript", "aws-sdk"]
+    SECURITY_LEVEL: "Government_Critical_Infrastructure"
+
+  # IEducationArchitecture Interface Implementation
+  EDUCATION:
+    DOCS_URL: "https://docs.aws.amazon.com/sdkref/latest/guide/feature-fips.html"
+    BUSINESS_IMPACT: "Non-FIPS cryptography blocks {{SILO:PROJECT_TYPE}} adoption in $125B+ federal and regulated markets - prevents government contracts and enterprise deployments requiring {{SILO:COMPLIANCE_REQUIREMENTS}} compliance"
+    QUICK_FIX: "Replace MD5/SHA1 with SHA256 or SHA512, use explicit FIPS-approved algorithms instead of dynamic selection for {{SILO:SECURITY_LEVEL}} compliance"
+
+  # FIPS 140-2 Cryptographic Standards Architecture
+  ARCHITECTURAL_LAYERS:
+    FIPS_APPROVED_ALGORITHMS: ["SHA256", "SHA384", "SHA512", "AES", "RSA", "ECDSA"]
+    PROHIBITED_ALGORITHMS: ["MD5", "SHA1", "DES", "3DES", "RC4"]
+    COMPLIANCE_LAYERS: ["Algorithm_Selection", "Key_Management", "Random_Number_Generation"]
+    VALIDATION_REQUIREMENTS: ["Deterministic_Selection", "Explicit_Specification", "NIST_Certified"]
+
+  # IValidationArchitecture Interface Implementation
+  DETECT:
+    PATTERNS:
+      csharp:
+        # MD5 Detection Patterns
+        - MD5_CREATE: "MD5\\.Create"
+        - MD5_FIELD: "MD5\\s+\\w+"
+        - MD5_USING: "using.*=.*MD5\\.Create"
+
+        # SHA1 Detection Patterns
+        - SHA1_CREATE: "SHA1\\.Create"
+        - SHA1_FIELD: "SHA1\\s+\\w+"
+        - SHA1_USING: "using.*=.*SHA1\\.Create"
+
+        # Non-Deterministic HashAlgorithm Patterns
+        - HASHALGORITHM_CREATE: "HashAlgorithm\\.Create"
+        - HASHALGORITHM_GENERIC: "HashAlgorithm\\s+\\w+"
+
+      java:
+        # MD5 in Java
+        - MD5_MESSAGE_DIGEST: "MessageDigest\\.getInstance\\s*\\(\\s*\"MD5\"\\s*\\)"
+        - MD5_STRING: "\"MD5\""
+
+        # SHA1 in Java
+        - SHA1_MESSAGE_DIGEST: "MessageDigest\\.getInstance\\s*\\(\\s*\"SHA-1\"\\s*\\)"
+        - SHA1_STRING: "\"SHA-1\""
+
+        # Dynamic algorithm selection
+        - DYNAMIC_ALGORITHM: "MessageDigest\\.getInstance\\s*\\(\\s*\\w+\\s*\\)"
+
+      python:
+        # MD5 in Python
+        - MD5_HASHLIB: "hashlib\\.md5\\s*\\("
+        - MD5_IMPORT: "from\\s+hashlib\\s+import\\s+md5"
+
+        # SHA1 in Python
+        - SHA1_HASHLIB: "hashlib\\.sha1\\s*\\("
+        - SHA1_IMPORT: "from\\s+hashlib\\s+import\\s+sha1"
+
+        # Dynamic algorithm
+        - HASHLIB_NEW: "hashlib\\.new\\s*\\("
+
+      typescript:
+        # MD5 in TypeScript/Node.js
+        - MD5_CRYPTO: "crypto\\.createHash\\s*\\(\\s*['\"]md5['\"]\\s*\\)"
+        - MD5_HASH_STRING: "['\"]md5['\"]"
+
+        # SHA1 in TypeScript
+        - SHA1_CRYPTO: "crypto\\.createHash\\s*\\(\\s*['\"]sha1['\"]\\s*\\)"
+        - SHA1_HASH_STRING: "['\"]sha1['\"]"
+
+        # Dynamic algorithm
+        - DYNAMIC_HASH: "crypto\\.createHash\\s*\\(\\s*\\w+\\s*\\)"
+
+  VIOLATIONS:
+    - "{{SILO:PROJECT_TYPE}} FIPS: MD5 algorithm usage violates {{SILO:COMPLIANCE_REQUIREMENTS}} - MD5 is cryptographically broken and not FIPS approved"
+    - "{{SILO:PROJECT_TYPE}} FIPS: SHA1 algorithm usage violates {{SILO:COMPLIANCE_REQUIREMENTS}} - SHA1 is deprecated and not FIPS approved for {{SILO:SECURITY_LEVEL}}"
+    - "{{SILO:PROJECT_TYPE}} FIPS: HashAlgorithm.Create() uses non-deterministic selection preventing {{SILO:COMPLIANCE_REQUIREMENTS}} validation"
+    - "{{SILO:PROJECT_TYPE}} FIPS: Dynamic algorithm selection blocks {{SILO:SECURITY_LEVEL}} certification - must use explicit FIPS-approved algorithms"
+
+  # IHealerArchitecture Interface Implementation
+  FIXES:
+    csharp:
+      # MD5 Fixes
+      - REPLACE: "MD5\\.Create\\(\\)"
+      - WITH: "SHA256.Create()"
+      - TEACHING: "Replace MD5 with FIPS-approved SHA256 for {{SILO:COMPLIANCE_REQUIREMENTS}} - MD5 is cryptographically broken (collision attacks proven) and banned in {{SILO:SECURITY_LEVEL}} environments"
+
+      - REPLACE: "using (var md5 = MD5.Create())"
+      - WITH: "using (var sha256 = SHA256.Create())"
+      - TEACHING: "Use SHA256 in using statements for automatic disposal and {{SILO:COMPLIANCE_REQUIREMENTS}} compliance"
+
+      - REPLACE: "\\bMD5\\s+(\\w+)\\b"
+      - WITH: "SHA256 \\1"
+      - TEACHING: "Replace MD5 type declarations with SHA256 for {{SILO:PROJECT_TYPE}} FIPS compliance"
+
+      # SHA1 Fixes
+      - REPLACE: "SHA1\\.Create\\(\\)"
+      - WITH: "SHA256.Create()"
+      - TEACHING: "Replace deprecated SHA1 with SHA256 for {{SILO:COMPLIANCE_REQUIREMENTS}} - SHA1 collision attacks demonstrated, not approved for {{SILO:SECURITY_LEVEL}}"
+
+      - REPLACE: "\\bSHA1\\s+(\\w+)\\b"
+      - WITH: "SHA256 \\1"
+      - TEACHING: "SHA1 is deprecated - use SHA256 or SHA512 for {{SILO:PROJECT_TYPE}}"
+
+      # HashAlgorithm Fixes
+      - REPLACE: "HashAlgorithm\\.Create\\(\\)"
+      - WITH: "SHA256.Create()"
+      - TEACHING: "Use explicit SHA256 instead of HashAlgorithm.Create() for deterministic {{SILO:COMPLIANCE_REQUIREMENTS}} validation - {{SILO:SECURITY_LEVEL}} requires explicit algorithm specification"
+
+      - REPLACE: "HashAlgorithm "
+      - WITH: "SHA256 "
+      - TEACHING: "Specify explicit FIPS-approved algorithm (SHA256/SHA384/SHA512) for {{SILO:PROJECT_TYPE}}"
+
+    java:
+      # MD5 Fixes
+      - REPLACE: "MessageDigest.getInstance(\"MD5\")"
+      - WITH: "MessageDigest.getInstance(\"SHA-256\")"
+      - TEACHING: "Replace MD5 with SHA-256 for {{SILO:COMPLIANCE_REQUIREMENTS}} in Java applications"
+
+      # SHA1 Fixes
+      - REPLACE: "MessageDigest.getInstance(\"SHA-1\")"
+      - WITH: "MessageDigest.getInstance(\"SHA-256\")"
+      - TEACHING: "SHA-1 is cryptographically weak - use SHA-256 for {{SILO:SECURITY_LEVEL}} compliance"
+
+      # Dynamic algorithm fixes
+      - REPLACE: "MessageDigest.getInstance(algorithmName)"
+      - WITH: "MessageDigest.getInstance(\"SHA-256\") // TODO: Review algorithm selection for FIPS compliance"
+      - TEACHING: "Use explicit SHA-256 for {{SILO:COMPLIANCE_REQUIREMENTS}} - dynamic selection prevents validation"
+
+    python:
+      # MD5 Fixes
+      - REPLACE: "hashlib.md5("
+      - WITH: "hashlib.sha256("
+      - TEACHING: "Replace MD5 with SHA256 for {{SILO:COMPLIANCE_REQUIREMENTS}} in Python"
+
+      - REPLACE: "from hashlib import md5"
+      - WITH: "from hashlib import sha256"
+      - TEACHING: "Import SHA256 instead of MD5 for {{SILO:PROJECT_TYPE}} compliance"
+
+      # SHA1 Fixes
+      - REPLACE: "hashlib.sha1("
+      - WITH: "hashlib.sha256("
+      - TEACHING: "SHA1 is deprecated - use SHA256 for {{SILO:SECURITY_LEVEL}}"
+
+      # Dynamic algorithm fixes
+      - REPLACE: "hashlib.new("
+      - WITH: "hashlib.sha256( # TODO: Use explicit SHA256 for FIPS compliance"
+      - TEACHING: "Use explicit hashlib.sha256() for {{SILO:COMPLIANCE_REQUIREMENTS}} validation"
+
+    typescript:
+      # MD5 Fixes
+      - REPLACE: "crypto.createHash('md5')"
+      - WITH: "crypto.createHash('sha256')"
+      - TEACHING: "Replace MD5 with SHA256 for {{SILO:COMPLIANCE_REQUIREMENTS}} in Node.js"
+
+      - REPLACE: "crypto.createHash(\"md5\")"
+      - WITH: "crypto.createHash(\"sha256\")"
+      - TEACHING: "Use SHA256 for {{SILO:PROJECT_TYPE}} FIPS compliance"
+
+      # SHA1 Fixes
+      - REPLACE: "crypto.createHash('sha1')"
+      - WITH: "crypto.createHash('sha256')"
+      - TEACHING: "SHA1 is deprecated - use SHA256 for {{SILO:SECURITY_LEVEL}}"
+
+    META_ARCHITECTURE:
+      HEALING_PRIORITY: 1
+      BREAKING_CHANGE: true
+      BUSINESS_IMPACT: "FIPS non-compliance blocks $125B+ federal market access"
+      AUTO_HEAL_SUCCESS_RATE: "85% - Can replace algorithm declarations and instantiations, hash size dependencies need manual review"
+
+  EXAMPLES:
+    VIOLATION:
+      csharp: |
+        // ❌ VIOLATION: Non-FIPS cryptography in AWS application
+        using System.Security.Cryptography;
+
+        public class S3ChecksumService
+        {
+            public string CalculateChecksum(byte[] data)
+            {
+                // MD5 - FIPS violation!
+                using (var md5 = MD5.Create())
+                {
+                    var hash = md5.ComputeHash(data);
+                    return BitConverter.ToString(hash);
+                }
+            }
+
+            public string CalculateSignature(byte[] data)
+            {
+                // SHA1 - Also FIPS violation!
+                using (var sha1 = SHA1.Create())
+                {
+                    return Convert.ToBase64String(sha1.ComputeHash(data));
+                }
+            }
+
+            public string DynamicHash(byte[] data, string algorithm)
+            {
+                // HashAlgorithm.Create() - Non-deterministic, FIPS violation!
+                using (var hasher = HashAlgorithm.Create(algorithm))
+                {
+                    return Convert.ToBase64String(hasher.ComputeHash(data));
+                }
+            }
+        }
+
+    CORRECT:
+      csharp: |
+        // ✅ CORRECT: FIPS-compliant cryptography for AWS
+        using System.Security.Cryptography;
+
+        public class S3ChecksumService
+        {
+            public string CalculateChecksum(byte[] data)
+            {
+                // SHA256 - FIPS approved!
+                using (var sha256 = SHA256.Create())
+                {
+                    var hash = sha256.ComputeHash(data);
+                    return BitConverter.ToString(hash);
+                }
+            }
+
+            public string CalculateSignature(byte[] data)
+            {
+                // SHA256 for digital signatures - FIPS compliant!
+                using (var sha256 = SHA256.Create())
+                {
+                    return Convert.ToBase64String(sha256.ComputeHash(data));
+                }
+            }
+
+            public string CalculateStrongHash(byte[] data)
+            {
+                // SHA512 for high-security scenarios - FIPS approved!
+                using (var sha512 = SHA512.Create())
+                {
+                    return Convert.ToBase64String(sha512.ComputeHash(data));
+                }
+            }
+        }
+
+  WHITELISTED_PATTERNS:
+    - "SHA256\\.Create"                    # FIPS-approved SHA256
+    - "SHA384\\.Create"                    # FIPS-approved SHA384
+    - "SHA512\\.Create"                    # FIPS-approved SHA512
+    - "Aes\\.Create"                       # FIPS-approved AES
+    - "MessageDigest\\.getInstance\\(\"SHA-256\"\\)"  # Java SHA-256
+    - "hashlib\\.sha256"                   # Python SHA256
+    - "crypto\\.createHash\\('sha256'\\)"  # Node.js SHA256
+
+  PARTIAL_HEALING:
+    csharp:
+      - ACTION: "Replace non-FIPS algorithms with SHA256 and add compliance comments"
+      - LIMITATION: "Cannot automatically update all dependent code that expects specific hash sizes or formats"
+      - DOWNGRADE_TO: "WARNING"
+      - EDUCATIONAL_NOTE: "Review hash size dependencies - SHA256 produces 32-byte hashes vs MD5's 16-byte. Verify compatibility with {{SILO:PROJECT_TYPE}} integration points."
+
+    META_ARCHITECTURE:
+      HEALING_PRIORITY: 7
+      BREAKING_CHANGE: false
+      AUTO_HEAL_SUCCESS_RATE: "50% - Can add comments and downgrade severity but cannot fully replace all hash algorithm usages"
+
+  # LAYER BLEEDING - Cross-layer data flow
+  LAYER_BLEEDING:
+    EDUCATION.BUSINESS_IMPACT -> HEALER.COMPLIANCE_JUSTIFICATION
+    EDUCATION.WHY_IT_MATTERS -> HEALER.TEACHING_CONTEXT
+    ARCHITECTURAL_LAYERS.FIPS_APPROVED_ALGORITHMS -> HEALER.ALGORITHM_SELECTION
+    ARCHITECTURAL_LAYERS.PROHIBITED_ALGORITHMS -> VALIDATION.DETECTION_PATTERNS
+
+  # SELF-GOVERNANCE
+  SELF_GOVERNANCE:
+    VALIDATES_SELF: true
+    RECURSIVE_DEPTH: 2
+    META_VALIDATION: "This rule enforces {{SILO:COMPLIANCE_REQUIREMENTS}} for {{SILO:PROJECT_TYPE}} cryptographic operations"
+    PROOF_OF_COMPLIANCE: "Rule implements IHealerArchitecture interface and validates FIPS 140-2 compliance"
+    COMPLIANCE_CHECK: "All detection patterns target non-FIPS algorithms, all fixes provide FIPS-approved alternatives"
+
+
+END RULE

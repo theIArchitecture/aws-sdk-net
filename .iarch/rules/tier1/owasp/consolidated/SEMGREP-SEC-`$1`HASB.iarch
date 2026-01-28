@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-`$1`HASB
+# Group: `$1`-has-been
+# Merged from 1 individual language-specific rules
+# Languages: generic
+
+RULE "`$1` has been added to the .semgrepignore list of ignored paths. Someone from app-sec may want to audit these changes." : IValidationArchitecture
+  ID: "SEMGREP-SEC-`$1`HASB"
+  DESCRIPTION: "`$1` has been added to the .semgrepignore list of ignored paths. Someone from app-sec may want to audit these changes."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["generic"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"generic\":[{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"}]}"
+
+  VIOLATIONS:
+    - "`$1` has been added to the .semgrepignore list of ignored paths. Someone from app-sec may want to audit these changes."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "`$1` has been added to the .semgrepignore list of ignored paths. Someone from app-sec may want to audit these changes. This can lead to security vulnerabilities. (`$1` has been)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://semgrep.dev/docs/ignoring-files-folders-code/"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "`$1`-has-been"
+
+END RULE

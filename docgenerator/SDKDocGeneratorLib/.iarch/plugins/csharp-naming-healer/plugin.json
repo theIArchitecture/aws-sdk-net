@@ -1,0 +1,9 @@
+{
+  "id": "csharp-naming-healer",
+  "version": "1.0.0",
+  "name": "C# Naming Convention Healer",
+  "type": "Healer",
+  "languages": ["csharp"],
+  "entryPoint": "healer.ts",
+  "dependencies": []
+}

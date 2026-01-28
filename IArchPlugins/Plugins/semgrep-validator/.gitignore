@@ -1,0 +1,12 @@
+# Build outputs
+bin/
+obj/
+
+# FFI binaries (downloaded from GitHub releases)
+ffi/
+*.dll
+*.so
+
+# IDE
+.vs/
+.vscode/

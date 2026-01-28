@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-CSRF
+# Group: csrf
+# Merged from 2 individual language-specific rules
+# Languages: java, javascript, typescript
+
+RULE "Detected a method annotated with 'RequestMapping' that does not specify the HTTP method. CSRF protections are not enabled for GET, HEAD, TRACE, or OPTIONS, and by default all HTTP methods are allowed when the HTTP method is not explicitly specified. This means that a method that performs state changes could be vulnerable to CSRF attacks. To mitigate, add the 'method' field and specify the HTTP method (such as 'RequestMethod.POST')." : IValidationArchitecture
+  ID: "SEMGREP-SEC-CSRF"
+  DESCRIPTION: "Detected a method annotated with 'RequestMapping' that does not specify the HTTP method. CSRF protections are not enabled for GET, HEAD, TRACE, or OPTIONS, and by default all HTTP methods are allowed when the HTTP method is not explicitly specified. This means that a method that performs state changes could be vulnerable to CSRF attacks. To mitigate, add the 'method' field and specify the HTTP method (such as 'RequestMethod.POST')."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java", "javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":1,\"Pattern\":\"@RequestMapping(...)\\n$RETURNTYPE $METHOD(...) { ... }\\n\"},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"RequestMapping\\n\"}],\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":1,\"Pattern\":\"$EXPRESS = require(\\u0027express\\u0027)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_6\",\"Type\":0,\"Pattern\":\"$APP = $EXPRESS()\\n\"}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":1,\"Pattern\":\"$EXPRESS = require(\\u0027express\\u0027)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_6\",\"Type\":0,\"Pattern\":\"$APP = $EXPRESS()\\n\"}]}"
+
+  VIOLATIONS:
+    - "Detected a method annotated with 'RequestMapping' that does not specify the HTTP method. CSRF protections are not enabled for GET, HEAD, TRACE, or OPTIONS, and by default all HTTP methods are allowed when the HTTP method is not explicitly specified. This means that a method that performs state changes could be vulnerable to CSRF attacks. To mitigate, add the 'method' field and specify the HTTP method (such as 'RequestMethod.POST')."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Detected a method annotated with 'RequestMapping' that does not specify the HTTP method. CSRF protections are not enabled for GET, HEAD, TRACE, or OPTIONS, and by default all HTTP methods are allowed when the HTTP method is not explicitly specified. This means that a method that performs state changes could be vulnerable to CSRF attacks. To mitigate, add the 'method' field and specify the HTTP method (such as 'RequestMethod.POST'). This can lead to security vulnerabilities. (csrf)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 2
+    SOURCE_GROUP: "csrf"
+
+END RULE

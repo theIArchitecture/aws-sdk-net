@@ -1,0 +1,9 @@
+{
+  "id": "csharp-naming-validator",
+  "version": "1.0.0",
+  "name": "C# Naming Convention Validator",
+  "type": "Validator",
+  "languages": ["csharp"],
+  "entryPoint": "validator.py",
+  "dependencies": []
+}

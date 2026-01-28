@@ -1,0 +1,6 @@
+{
+  "active": true,
+  "base-name": "KinesisFirehose",
+  "synopsis": "Amazon Kinesis Firehose is a fully managed service for ingesting data streams directly into AWS data services such as Amazon S3 and Amazon Redshift.",
+  "legacy-service-id": "Firehose"
+}

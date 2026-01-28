@@ -1,0 +1,6 @@
+{
+  "active": true,
+  "synopsis": "This is the preview release of Amazon CodeGuru Reviewer.",
+  "generate-client-constructors": true,
+  "legacy-service-id": "CodeGuru Reviewer"
+}

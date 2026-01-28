@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-SOFTLAYE
+# Group: softlayer-api-key
+# Merged from 1 individual language-specific rules
+# Languages: regex
+
+RULE "SoftLayer API Key detected" : IValidationArchitecture
+  ID: "SEMGREP-SEC-SOFTLAYE"
+  DESCRIPTION: "SoftLayer API Key detected"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["regex"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"regex\":[{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"}]}"
+
+  VIOLATIONS:
+    - "SoftLayer API Key detected"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "SoftLayer API Key detected This can lead to security vulnerabilities. (softlayer api key)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "softlayer-api-key"
+
+END RULE

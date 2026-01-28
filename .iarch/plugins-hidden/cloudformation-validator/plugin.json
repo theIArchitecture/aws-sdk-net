@@ -1,0 +1,19 @@
+{
+  "id": "cloudformation-validator",
+  "version": "1.0.0",
+  "name": "AWS CloudFormation Architecture Validator",
+  "description": "Validates architectural decisions in CloudFormation templates including load balancer configurations, high availability patterns, database strategies, and scaling policies",
+  "type": "Validator",
+  "languages": ["cloudformation", "aws"],
+  "entryPoint": "validator.py",
+  "dependencies": [
+    "PyYAML (pip install pyyaml)"
+  ],
+  "author": "IArchitecture",
+  "rules": [
+    "AWS-ARCH-LB-001: Load balancers must use sticky sessions",
+    "AWS-ARCH-HA-001: Resources must deploy across multiple availability zones",
+    "AWS-ARCH-DB-001: RDS instances should have read replicas for production",
+    "AWS-ARCH-SCALE-001: Auto-scaling must be configured for scalable services"
+  ]
+}

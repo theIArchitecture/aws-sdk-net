@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-REL-`$X==$X`
+# Group: `$x-==-$x`
+# Merged from 1 individual language-specific rules
+# Languages: java
+
+RULE "`$X == $X` or `$X != $X` is always true. (Unless the value compared is a float or double). To test if `$X` is not-a-number, use `Double.isNaN($X)`." : IValidationArchitecture
+  ID: "SEMGREP-REL-`$X==$X`"
+  DESCRIPTION: "`$X == $X` or `$X != $X` is always true. (Unless the value compared is a float or double). To test if `$X` is not-a-number, use `Double.isNaN($X)`."
+  SEVERITY: Fatal
+  CATEGORY: "Reliability"
+  APPLIES_TO: ["java"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Reliability"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_3_OR_0\",\"Type\":0,\"Pattern\":\"$X == $X\"},{\"Name\":\"SEMGREP_PATTERN_3_OR_1\",\"Type\":0,\"Pattern\":\"$X != $X\"}]}]}"
+
+  VIOLATIONS:
+    - "`$X == $X` or `$X != $X` is always true. (Unless the value compared is a float or double). To test if `$X` is not-a-number, use `Double.isNaN($X)`."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "`$X == $X` or `$X != $X` is always true. (Unless the value compared is a float or double). To test if `$X` is not-a-number, use `Double.isNaN($X)`. This can lead to security vulnerabilities. (`$x == $x`)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "`$x-==-$x`"
+
+END RULE

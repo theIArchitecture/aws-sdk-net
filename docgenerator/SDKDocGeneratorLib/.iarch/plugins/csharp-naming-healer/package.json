@@ -1,0 +1,22 @@
+{
+  "name": "csharp-naming-healer",
+  "version": "1.0.0",
+  "description": "C# naming convention healer plugin for IArchitecture",
+  "main": "healer.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "iarchitecture",
+    "plugin",
+    "healer",
+    "csharp"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}

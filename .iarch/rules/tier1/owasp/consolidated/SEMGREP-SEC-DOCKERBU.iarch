@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-DOCKERBU
+# Group: docker-build-time
+# Merged from 1 individual language-specific rules
+# Languages: dockerfile
+
+RULE "Docker build time arguments are not suited for secrets, because the argument values are saved with the image. Running `docker image history` on the image will show information on how the image was built, including arguments. If these contain plain text secrets, anyone with access to the docker image can access those secrets and exploit them." : IValidationArchitecture
+  ID: "SEMGREP-SEC-DOCKERBU"
+  DESCRIPTION: "Docker build time arguments are not suited for secrets, because the argument values are saved with the image. Running `docker image history` on the image will show information on how the image was built, including arguments. If these contain plain text secrets, anyone with access to the docker image can access those secrets and exploit them."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["dockerfile"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"dockerfile\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"ARG $ARG\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"ARG $ARG=...\"}]}]}"
+
+  VIOLATIONS:
+    - "Docker build time arguments are not suited for secrets, because the argument values are saved with the image. Running `docker image history` on the image will show information on how the image was built, including arguments. If these contain plain text secrets, anyone with access to the docker image can access those secrets and exploit them."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Docker build time arguments are not suited for secrets, because the argument values are saved with the image. Running `docker image history` on the image will show information on how the image was built, including arguments. If these contain plain text secrets, anyone with access to the docker image can access those secrets and exploit them. This can lead to security vulnerabilities. (docker build time)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://cwe.mitre.org/data/definitions/538.html"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "docker-build-time"
+
+END RULE

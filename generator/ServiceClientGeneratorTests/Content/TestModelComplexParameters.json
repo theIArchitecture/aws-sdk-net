@@ -1,0 +1,60 @@
+{
+  "shapes": {
+    "NestedShape": {
+      "type": "structure",
+      "members": {
+        "listOfObjects": {
+          "shape": "ListOfObjects"
+        },
+        "map": {
+          "shape": "MapShape"
+        }
+      }
+    },
+    "ListOfObjects": {
+      "type": "list",
+      "member": {
+        "shape": "InnerShape"
+      }
+    },
+    "MapShape": {
+      "type": "map",
+      "key": {
+        "shape": "String"
+      },
+      "value": {
+        "shape": "MapValueShape"
+      }
+    },
+    "MapValueShape": {
+      "type": "structure",
+      "members": {}
+    },
+    "InnerShape": {
+      "type": "structure",
+      "members": {
+        "inner": { "shape": "String" }
+      }
+    },
+    "String": {
+      "type": "string"
+    },
+    "ListOfUnions": {
+      "type": "list",
+      "member": { "shape": "UnionMember" }
+    },
+    "UnionMember": {
+      "type": "structure",
+      "members": {
+        "string": { "shape": "String" },
+        "object": { "shape": "ObjectMember" }
+      }
+    },
+    "ObjectMember": {
+      "type": "structure",
+      "members": {
+        "key": { "shape": "String" }
+      }
+    }
+  }
+}

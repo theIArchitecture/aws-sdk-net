@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-COD-THISAPKC
+# Group: this-apk-command
+# Merged from 1 individual language-specific rules
+# Languages: dockerfile
+
+RULE "This apk command is missing '--no-cache'. This forces apk to use a package index instead of a local package cache, removing the need for '--update' and the deletion of '/var/cache/apk/*'. Add '--no-cache' to your apk command." : IValidationArchitecture
+  ID: "SEMGREP-COD-THISAPKC"
+  DESCRIPTION: "This apk command is missing '--no-cache'. This forces apk to use a package index instead of a local package cache, removing the need for '--update' and the deletion of '/var/cache/apk/*'. Add '--no-cache' to your apk command."
+  SEVERITY: Info
+  CATEGORY: "CodeQuality"
+  APPLIES_TO: ["dockerfile"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "CodeQuality"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"dockerfile\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"RUN apk $COMMAND ...\\n\"}]}"
+
+  VIOLATIONS:
+    - "This apk command is missing '--no-cache'. This forces apk to use a package index instead of a local package cache, removing the need for '--update' and the deletion of '/var/cache/apk/*'. Add '--no-cache' to your apk command."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "This apk command is missing '--no-cache'. This forces apk to use a package index instead of a local package cache, removing the need for '--update' and the deletion of '/var/cache/apk/*'. Add '--no-cache' to your apk command. This can lead to security vulnerabilities. (this apk command)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://github.com/hadolint/hadolint/wiki/DL3019"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "this-apk-command"
+
+END RULE

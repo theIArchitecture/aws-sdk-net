@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-UNLESSCH
+# Group: unless-checking-for
+# Merged from 2 individual language-specific rules
+# Languages: go
+
+RULE "unless checking for wall clock inconsistencies, use !$T1.After($T2)\n" : IValidationArchitecture
+  ID: "SEMGREP-SEC-UNLESSCH"
+  DESCRIPTION: "unless checking for wall clock inconsistencies, use !$T1.After($T2)\n"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$T1.UnixNano() \\u003C= $T2.UnixNano()\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$T1.UnixNano() \\u003C= $T2.UnixNano()\"}]}"
+
+  VIOLATIONS:
+    - "unless checking for wall clock inconsistencies, use !$T1.After($T2)\n"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "unless checking for wall clock inconsistencies, use !$T1.After($T2)\n This can lead to security vulnerabilities. (unless checking for)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 2
+    SOURCE_GROUP: "unless-checking-for"
+
+END RULE

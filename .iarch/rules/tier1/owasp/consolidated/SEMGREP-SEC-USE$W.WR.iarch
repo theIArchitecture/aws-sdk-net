@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-USE$W.WR
+# Group: use-$w.write($var)-instead
+# Merged from 2 individual language-specific rules
+# Languages: go
+
+RULE "use $W.Write($VAR) instead of io.WriteString when $VAR is []byte" : IValidationArchitecture
+  ID: "SEMGREP-SEC-USE$W.WR"
+  DESCRIPTION: "use $W.Write($VAR) instead of io.WriteString when $VAR is []byte"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"io.WriteString($W, string($VAR))\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"io.WriteString($W, string($VAR))\"}]}"
+
+  VIOLATIONS:
+    - "use $W.Write($VAR) instead of io.WriteString when $VAR is []byte"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "use $W.Write($VAR) instead of io.WriteString when $VAR is []byte This can lead to security vulnerabilities. (use $w.write($var) instead)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 2
+    SOURCE_GROUP: "use-$w.write($var)-instead"
+
+END RULE

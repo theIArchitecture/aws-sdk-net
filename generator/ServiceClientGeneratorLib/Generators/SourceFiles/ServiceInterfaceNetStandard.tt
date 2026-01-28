@@ -1,0 +1,141 @@
+﻿<#@ template language="C#" inherits="BaseGenerator" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#
+	AddLicenseHeader();
+#>
+
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Amazon.Runtime;
+using <#=this.Config.Namespace#>.Model;
+
+#pragma warning disable CS1570
+namespace <#=this.Config.Namespace#>
+{
+<#    this.FormatServiceInterfaceDocumentation(this.Config.ServiceModel.Documentation); #>
+	public partial interface IAmazon<#=this.Config.ClassName#> : IAmazonService, IDisposable
+	{
+<#
+	// Creates paginators for service if available
+	if (this.Config.ServiceModel.HasPaginators)
+	{
+#>
+#if AWS_ASYNC_ENUMERABLES_API
+        /// <summary>
+        /// Paginators for the service
+        /// </summary>
+        I<#=this.Config.ServiceNameRoot#>PaginatorFactory Paginators { get; }
+#endif
+<#
+    }
+#>
+		<#
+    // Generates definitions for each operation in the service model
+		foreach(var operation in this.Config.ServiceModel.Operations)
+		{
+            if(operation.IsInternal)
+                continue;
+		#>
+		
+		#region  <#=operation.Name#>
+
+<#
+        if ((this.Config.ServiceModel.H2Support == H2SupportDegree.Optional && operation.IsEventStreamBidi) || (this.Config.ServiceModel.H2Support == H2SupportDegree.EventStream && operation.IsEventStreamOutput) || this.Config.ServiceModel.H2Support == H2SupportDegree.Required)
+        {
+#>
+#if NET8_0_OR_GREATER
+<#
+        }
+        // Creates a parameterless definition of the operation if specified in the customizations file
+        if (this.Config.ServiceModel.Customizations.CreateNoArgOverload(operation.Name))
+        {
+		this.FormatOperationDocumentationAsync(operation, false);
+		if(operation.IsDeprecated)
+		{
+#>
+		[Obsolete("<#=operation.DeprecationMessage#>")]
+<#		
+		}
+#>
+        Task<<#=operation.Name#>Response> <#=operation.Name#>Async(System.Threading.CancellationToken cancellationToken = default(CancellationToken));
+
+<#
+        }
+
+        AddSimpleClientMethodInterfaces(operation, false);
+#>
+
+<#        
+        this.FormatOperationDocumentationAsync(operation, true);
+		if(operation.IsDeprecated)
+		{
+#>
+		[Obsolete("<#=operation.DeprecationMessage#>")]
+<#		
+		}
+#>
+        Task<<#=operation.Name#>Response> <#=operation.Name#>Async(<#=operation.Name#>Request request, System.Threading.CancellationToken cancellationToken = default(CancellationToken));
+
+<#
+        if ((this.Config.ServiceModel.H2Support == H2SupportDegree.Optional && operation.IsEventStreamBidi) || (this.Config.ServiceModel.H2Support == H2SupportDegree.EventStream && operation.IsEventStreamOutput) || this.Config.ServiceModel.H2Support == H2SupportDegree.Required)
+        {
+#>
+#endif
+<#
+        }
+#>
+		#endregion
+		<#
+		}
+		#>
+<# if (this.Config.EndpointsRuleSet != null) { #>
+        
+		#region DetermineServiceOperationEndpoint
+
+        /// <summary>
+        /// Returns the endpoint that will be used for a particular request.
+        /// </summary>
+        /// <param name="request">Request for the desired service operation.</param>
+        /// <returns>The resolved endpoint for the given request.</returns>
+        Amazon.Runtime.Endpoints.Endpoint DetermineServiceOperationEndpoint(AmazonWebServiceRequest request);
+        
+        #endregion
+<# } #>
+
+        #region Static factory interface methods
+#if NET8_0_OR_GREATER
+// Warning CA1033 is issued when the child types can not call the method defined in parent types.
+// In this use case the intended caller is only meant to be the interface as a factory
+// method to create the child types. Given the SDK use case the warning can be ignored.
+#pragma warning disable CA1033
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.DynamicDependency(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties, typeof(Amazon<#=this.Config.ClassName#>Config))]
+        static ClientConfig IAmazonService.CreateDefaultClientConfig() => new Amazon<#=this.Config.ClassName#>Config();
+
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("AssemblyLoadTrimming", "IL2026:RequiresUnreferencedCode",
+    Justification = "This suppression is here to ignore the warnings caused by CognitoSync. See justification in IAmazonService.")]
+        static IAmazonService IAmazonService.CreateDefaultServiceClient(AWSCredentials awsCredentials, ClientConfig clientConfig)
+        {
+            var serviceClientConfig = clientConfig as Amazon<#=this.Config.ClassName#>Config;
+            if (serviceClientConfig == null)
+            {
+                throw new AmazonClientException("ClientConfig is not of type Amazon<#=this.Config.ClassName#>Config to create Amazon<#=this.Config.ClassName#>Client");
+            }
+
+            return awsCredentials == null ? 
+                    new Amazon<#=this.Config.ClassName#>Client(serviceClientConfig) :
+                    new Amazon<#=this.Config.ClassName#>Client(awsCredentials, serviceClientConfig);
+        }
+#pragma warning restore CA1033
+#endif
+        #endregion
+	}
+}

@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-BYSETTIN
+# Group: by-setting-`allerrors:
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "By setting `allErrors: true` in `Ajv` library, all error objects will be allocated without limit. This allows the attacker to produce a huge number of errors which can lead to denial of service. Do not use `allErrors: true` in production." : IValidationArchitecture
+  ID: "SEMGREP-SEC-BYSETTIN"
+  DESCRIPTION: "By setting `allErrors: true` in `Ajv` library, all error objects will be allocated without limit. This allows the attacker to produce a huge number of errors which can lead to denial of service. Do not use `allErrors: true` in production."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"new Ajv({...,allErrors: true,...},...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_AND_0\",\"Type\":0,\"Pattern\":\"new Ajv($SETTINGS,...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_2_AND_1\",\"Type\":1,\"Pattern\":\"$SETTINGS = {...,allErrors: true,...}\\n...\\n\"}]}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"new Ajv({...,allErrors: true,...},...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_AND_0\",\"Type\":0,\"Pattern\":\"new Ajv($SETTINGS,...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_2_AND_1\",\"Type\":1,\"Pattern\":\"$SETTINGS = {...,allErrors: true,...}\\n...\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "By setting `allErrors: true` in `Ajv` library, all error objects will be allocated without limit. This allows the attacker to produce a huge number of errors which can lead to denial of service. Do not use `allErrors: true` in production."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "By setting `allErrors: true` in `Ajv` library, all error objects will be allocated without limit. This allows the attacker to produce a huge number of errors which can lead to denial of service. Do not use `allErrors: true` in production. This can lead to security vulnerabilities. (by setting `allerrors:)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://ajv.js.org/options.html#allerrors"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "by-setting-`allerrors:"
+
+END RULE

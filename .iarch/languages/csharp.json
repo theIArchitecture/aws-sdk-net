@@ -1,0 +1,138 @@
+{
+  "$schema": "../../../schemas/language-definition.schema.json",
+  "language": "csharp",
+  "displayName": "C# (AWS SDK)",
+  "fileExtensions": [".cs", ".csx"],
+
+  "layerDetection": {
+    "layers": {
+      "Base": {
+        "pathPatterns": ["/Runtime/", "/runtime/", "\\\\Runtime\\\\", "\\\\runtime\\\\", "/Core/", "/core/", "\\\\Core\\\\", "\\\\core\\\\"],
+        "baseClassPatterns": ["AmazonServiceClient", "AmazonWebServiceClient"],
+        "interfacePatterns": ["IClientConfig", "IExecutionContext"],
+        "namingPatterns": ["^Amazon\\.Runtime\\..*", "^Amazon\\.Util\\..*", ".*Pipeline.*", ".*Credentials.*"],
+        "importPatterns": ["Amazon\\.Runtime\\..*", "Amazon\\.Util\\..*"]
+      },
+
+      "Model": {
+        "pathPatterns": ["/Model/", "/model/", "\\\\Model\\\\", "\\\\model\\\\"],
+        "baseClassPatterns": ["AmazonWebServiceRequest", "AmazonWebServiceResponse", "ModelBase"],
+        "interfacePatterns": [],
+        "namingPatterns": ["Request$", "Response$", ".*Exception$"],
+        "importPatterns": []
+      },
+
+      "Internal": {
+        "pathPatterns": ["/Internal/", "/internal/", "\\\\Internal\\\\", "\\\\internal\\\\", "/Util/", "/util/", "\\\\Util\\\\", "\\\\util\\\\"],
+        "baseClassPatterns": [],
+        "interfacePatterns": [],
+        "namingPatterns": ["Util$", ".*Util", "Helper$", ".*Handler$", ".*Marshaller$"],
+        "importPatterns": []
+      },
+
+      "Client": {
+        "pathPatterns": ["/Services/", "/services/", "\\\\Services\\\\", "\\\\services\\\\"],
+        "baseClassPatterns": ["AmazonServiceClient"],
+        "interfacePatterns": ["IAmazon.*"],
+        "namingPatterns": ["Client$", ".*Client", "Config$"],
+        "importPatterns": []
+      }
+    }
+  },
+
+  "parsingPatterns": {
+    "namespace": "^\\s*namespace\\s+([\\w\\.]+)",
+    "import": "^\\s*using\\s+(?<modifier>static\\s+)?(?<module>[\\w\\.]+)\\s*;",
+    "typeDeclaration": "(?:public\\s+|private\\s+|protected\\s+|internal\\s+)?(?:static\\s+)?(?:sealed\\s+)?(?:abstract\\s+)?(?:partial\\s+)?(class|interface|enum|struct|record)\\s+(\\w+)(?:\\s*<[^>]+>)?(?:\\s*:\\s*([^{]+))?\\s*\\{",
+    "typeKeywords": ["class", "interface", "enum", "struct", "record"],
+    "methodDeclaration": "(?:public\\s+|private\\s+|protected\\s+|internal\\s+|protected\\s+internal\\s+)?(?:static\\s+)?(?:virtual\\s+)?(?:override\\s+)?(?:abstract\\s+)?(?:async\\s+)?([\\w<>,\\s\\[\\]]+)\\s+(\\w+)\\s*(?:<[^>]+>)?\\s*\\(([^)]*)\\)",
+    "instantiation": "new\\s+([\\w\\.]+)(?:<[^>]+>)?\\s*\\(",
+    "commentSingleLine": "//(.*)$",
+    "commentMultiLine": "/\\*(.*?)\\*/",
+    "commentDocumentation": "///(.*)$"
+  },
+
+  "plainImportBehavior": "skip",
+
+  "fieldExtractionPatterns": [
+    {
+      "name": "field_declaration",
+      "description": "Matches field declarations",
+      "pattern": "(?:public\\s+|private\\s+|protected\\s+|internal\\s+)?(?:static\\s+|readonly\\s+|const\\s+)*([\\w<>,\\s\\[\\]\\?]+)\\s+(\\w+)\\s*(?:;|=|\\{)",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": false
+    },
+    {
+      "name": "auto_property",
+      "description": "Matches auto-implemented properties",
+      "pattern": "(?:public\\s+|private\\s+|protected\\s+|internal\\s+)?(?:static\\s+|virtual\\s+|override\\s+|abstract\\s+)?([\\w<>,\\s\\[\\]\\?]+)\\s+(\\w+)\\s*\\{\\s*(?:get|set)",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": true
+    },
+    {
+      "name": "event_declaration",
+      "description": "Matches event declarations",
+      "pattern": "(?:public\\s+|private\\s+|protected\\s+|internal\\s+)?(?:static\\s+)?event\\s+([\\w<>]+)\\s+(\\w+)",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": false
+    },
+    {
+      "name": "delegate_declaration",
+      "description": "Matches delegate declarations",
+      "pattern": "(?:public\\s+|private\\s+|protected\\s+|internal\\s+)?delegate\\s+([\\w<>]+)\\s+(\\w+)",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": false
+    },
+    {
+      "name": "lambda_property",
+      "description": "Matches expression-bodied properties",
+      "pattern": "(?:public\\s+|private\\s+|protected\\s+)?([\\w<>,\\s\\[\\]]+)\\s+(\\w+)\\s*=>",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": true
+    }
+  ],
+
+  "transformationRules": {
+    "importTemplate": "using {namespace};",
+    "importInsertLocation": "after_last_import",
+    "importRemovalPattern": "^\\s*using\\s+{namespace}\\s*;\\s*$"
+  },
+
+  "formattingRules": {
+    "indentSize": 4,
+    "increaseIndentTriggers": ["{"],
+    "decreaseIndentTriggers": ["}"],
+    "decreaseBeforeLine": true
+  },
+
+  "syntaxValidation": {
+    "balancedPairs": [
+      { "open": "{", "close": "}" },
+      { "open": "(", "close": ")" },
+      { "open": "[", "close": "]" },
+      { "open": "<", "close": ">" }
+    ],
+    "invalidPatterns": [";;", "using\\s+[^;]*$"]
+  },
+
+  "commentStyles": ["//", "/*", "*/", "///"],
+
+  "additionalPatterns": {
+    "attribute": "\\[([\\w.]+)(?:\\([^)]*\\))?\\]",
+    "nullable": "(\\w+)\\?",
+    "genericConstraint": "where\\s+(\\w+)\\s*:\\s*([^{]+)",
+    "indexer": "(?:public\\s+|private\\s+)?([\\w<>]+)\\s+this\\s*\\[([^\\]]+)\\]",
+    "extension_method": "static\\s+([\\w<>]+)\\s+(\\w+)\\s*\\(\\s*this\\s+([\\w<>]+)",
+    "async_method": "async\\s+([\\w<>]+)\\s+(\\w+)",
+    "expression_body": "([\\w<>]+)\\s+(\\w+)(?:\\s*\\(([^)]*)\\))?\\s*=>",
+    "pattern_matching": "is\\s+([\\w<>]+)(?:\\s+(\\w+))?",
+    "record_declaration": "record\\s+(\\w+)(?:\\s*\\(([^)]*)\\))?",
+    "primary_constructor": "class\\s+(\\w+)\\s*\\(([^)]*)\\)",
+    "required_property": "required\\s+([\\w<>]+)\\s+(\\w+)"
+  }
+}

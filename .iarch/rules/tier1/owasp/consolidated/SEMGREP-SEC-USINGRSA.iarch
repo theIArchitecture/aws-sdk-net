@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-USINGRSA
+# Group: using-rsa-without
+# Merged from 1 individual language-specific rules
+# Languages: java, kt
+
+RULE "Using RSA without OAEP mode weakens the encryption." : IValidationArchitecture
+  ID: "SEMGREP-SEC-USINGRSA"
+  DESCRIPTION: "Using RSA without OAEP mode weakens the encryption."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java", "kt"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$CIPHER.getInstance(\\u0022=~/RSA/[Nn][Oo][Nn][Ee]/NoPadding/\\u0022)\"}],\"kt\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$CIPHER.getInstance(\\u0022=~/RSA/[Nn][Oo][Nn][Ee]/NoPadding/\\u0022)\"}]}"
+
+  VIOLATIONS:
+    - "Using RSA without OAEP mode weakens the encryption."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Using RSA without OAEP mode weakens the encryption. This can lead to security vulnerabilities. (using rsa without)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://rdist.root.org/2009/10/06/why-rsa-encryption-padding-is-critical/"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "using-rsa-without"
+
+END RULE

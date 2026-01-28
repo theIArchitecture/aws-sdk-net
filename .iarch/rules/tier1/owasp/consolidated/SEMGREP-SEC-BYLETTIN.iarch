@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-BYLETTIN
+# Group: by-letting-user
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "By letting user input control CORS parameters, there is a risk that software does not properly verify that the source of data or communication is valid. Use literal values for CORS settings." : IValidationArchitecture
+  ID: "SEMGREP-SEC-BYLETTIN"
+  DESCRIPTION: "By letting user input control CORS parameters, there is a risk that software does not properly verify that the source of data or communication is valid. Use literal values for CORS settings."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES, $NEXT) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES) {...})\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES, $NEXT) {...})\"}]}]}]},{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_0\",\"Type\":0,\"Pattern\":\"$REQ.query\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_1\",\"Type\":0,\"Pattern\":\"$REQ.body\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_2\",\"Type\":0,\"Pattern\":\"$REQ.params\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_3\",\"Type\":0,\"Pattern\":\"$REQ.cookies\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_4\",\"Type\":0,\"Pattern\":\"$REQ.headers\"}]}]}]},{\"Name\":\"TAINT_SOURCE_2\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response, $NEXT: NextFunction) =\\u003E\\n{...}\\n\"},{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response) =\\u003E {...}\\n\"}]},{\"Name\":\"TAINT_SOURCE_2_AND_2\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_0\",\"Type\":0,\"Pattern\":\"params\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_1\",\"Type\":0,\"Pattern\":\"query\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_2\",\"Type\":0,\"Pattern\":\"cookies\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_3\",\"Type\":0,\"Pattern\":\"headers\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_4\",\"Type\":0,\"Pattern\":\"body\"}]}]}]},{\"Name\":\"TAINT_SINK_3\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_3\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SINK_3_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SINK_3_AND_0_OR_0\",\"Type\":0,\"Pattern\":\"$RES.set($HEADER, $X)\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_1\",\"Type\":0,\"Pattern\":\"$RES.header($HEADER, $X)\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_2\",\"Type\":0,\"Pattern\":\"$RES.setHeader($HEADER, $X)\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_3\",\"Type\":0,\"Pattern\":\"$RES.set({$HEADER: $X}, ...)\\n\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_4\",\"Type\":0,\"Pattern\":\"$RES.writeHead($STATUS, {$HEADER: $X}, ...)\\n\"}]}]}]}],\"typescript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES, $NEXT) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES) {...})\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES, $NEXT) {...})\"}]}]}]},{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_0\",\"Type\":0,\"Pattern\":\"$REQ.query\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_1\",\"Type\":0,\"Pattern\":\"$REQ.body\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_2\",\"Type\":0,\"Pattern\":\"$REQ.params\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_3\",\"Type\":0,\"Pattern\":\"$REQ.cookies\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_4\",\"Type\":0,\"Pattern\":\"$REQ.headers\"}]}]}]},{\"Name\":\"TAINT_SOURCE_2\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response, $NEXT: NextFunction) =\\u003E\\n{...}\\n\"},{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response) =\\u003E {...}\\n\"}]},{\"Name\":\"TAINT_SOURCE_2_AND_2\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_0\",\"Type\":0,\"Pattern\":\"params\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_1\",\"Type\":0,\"Pattern\":\"query\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_2\",\"Type\":0,\"Pattern\":\"cookies\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_3\",\"Type\":0,\"Pattern\":\"headers\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_4\",\"Type\":0,\"Pattern\":\"body\"}]}]}]},{\"Name\":\"TAINT_SINK_3\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_3\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SINK_3_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SINK_3_AND_0_OR_0\",\"Type\":0,\"Pattern\":\"$RES.set($HEADER, $X)\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_1\",\"Type\":0,\"Pattern\":\"$RES.header($HEADER, $X)\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_2\",\"Type\":0,\"Pattern\":\"$RES.setHeader($HEADER, $X)\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_3\",\"Type\":0,\"Pattern\":\"$RES.set({$HEADER: $X}, ...)\\n\"},{\"Name\":\"TAINT_SINK_3_AND_0_OR_4\",\"Type\":0,\"Pattern\":\"$RES.writeHead($STATUS, {$HEADER: $X}, ...)\\n\"}]}]}]}]}"
+
+  VIOLATIONS:
+    - "By letting user input control CORS parameters, there is a risk that software does not properly verify that the source of data or communication is valid. Use literal values for CORS settings."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "By letting user input control CORS parameters, there is a risk that software does not properly verify that the source of data or communication is valid. Use literal values for CORS settings. This can lead to security vulnerabilities. (by letting user)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "by-letting-user"
+
+END RULE

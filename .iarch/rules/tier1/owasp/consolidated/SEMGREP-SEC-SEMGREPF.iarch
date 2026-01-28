@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-SEMGREPF
+# Group: semgrep-found-a
+# Merged from 1 individual language-specific rules
+# Languages: generic
+
+RULE "Semgrep found a bash reverse shell" : IValidationArchitecture
+  ID: "SEMGREP-SEC-SEMGREPF"
+  DESCRIPTION: "Semgrep found a bash reverse shell"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["generic"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"generic\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"sh -i \\u003E\\u0026 /dev/udp/.../... 0\\u003E\\u00261\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"\\u003C...\\u003E/dev/tcp/.../...; sh \\u003C\\u0026... \\u003E\\u0026... 2\\u003E\\u0026\\n\"},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"\\u003C...\\u003E/dev/tcp/.../...; cat \\u003C\\u0026... | while read line; do $line 2\\u003E\\u0026... \\u003E\\u0026...;done\\n\"},{\"Name\":\"SEMGREP_PATTERN_4\",\"Type\":0,\"Pattern\":\"sh -i ...\\u003C...\\u003E /dev/tcp/.../... ...\\u003C\\u0026... 1\\u003E\\u0026... 2\\u003E\\u0026\\n\"}]}"
+
+  VIOLATIONS:
+    - "Semgrep found a bash reverse shell"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Semgrep found a bash reverse shell This can lead to security vulnerabilities. (semgrep found a)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A03_2021-Injection"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "semgrep-found-a"
+
+END RULE

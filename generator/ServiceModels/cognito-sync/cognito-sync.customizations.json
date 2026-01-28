@@ -1,0 +1,29 @@
+{
+    "runtimePipelineOverride":{
+        "overrides":[
+            {
+                "operation":"addBefore",
+                "targetType":"Amazon.Runtime.Internal.RetryHandler",
+                "newType":"Amazon.CognitoSync.Internal.CognitoCredentialsRetriever"
+            }
+        ]
+    },
+    "simpleMethods" : {
+        "operations" : {
+            "GetIdentityPoolConfiguration" : {
+                "methodForms" : [
+                    [
+                        "IdentityPoolId"
+                    ]
+                ]
+            },
+            "DescribeIdentityPoolUsage" : {
+                "methodForms" : [
+                    [
+                        "IdentityPoolId"
+                    ]
+                ]
+            }
+        }
+    }
+}

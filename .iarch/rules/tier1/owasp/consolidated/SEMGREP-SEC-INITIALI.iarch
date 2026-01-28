@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-INITIALI
+# Group: initialization-vectors-(ivs)
+# Merged from 1 individual language-specific rules
+# Languages: java
+
+RULE "Initialization Vectors (IVs) for block ciphers should be randomly generated each time they are used. Using a static IV means the same plaintext encrypts to the same ciphertext every time, weakening the strength of the encryption." : IValidationArchitecture
+  ID: "SEMGREP-SEC-INITIALI"
+  DESCRIPTION: "Initialization Vectors (IVs) for block ciphers should be randomly generated each time they are used. Using a static IV means the same plaintext encrypts to the same ciphertext every time, weakening the strength of the encryption."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"byte[] $IV = {\\n    ...\\n};\\n...\\nnew IvParameterSpec($IV, ...);\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"class $CLASS {\\n    byte[] $IV = {\\n        ...\\n    };\\n    ...\\n    $METHOD(...) {\\n        ...\\n        new IvParameterSpec($IV, ...);\\n        ...\\n    }\\n}\\n\"}]}"
+
+  VIOLATIONS:
+    - "Initialization Vectors (IVs) for block ciphers should be randomly generated each time they are used. Using a static IV means the same plaintext encrypts to the same ciphertext every time, weakening the strength of the encryption."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Initialization Vectors (IVs) for block ciphers should be randomly generated each time they are used. Using a static IV means the same plaintext encrypts to the same ciphertext every time, weakening the strength of the encryption. This can lead to security vulnerabilities. (initialization vectors (ivs))"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://cwe.mitre.org/data/definitions/329.html"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "initialization-vectors-(ivs)"
+
+END RULE

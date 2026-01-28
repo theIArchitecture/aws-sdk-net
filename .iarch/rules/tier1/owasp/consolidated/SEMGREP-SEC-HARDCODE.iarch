@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-HARDCODE
+# Group: hardcoded-secrets
+# Merged from 3 individual language-specific rules
+# Languages: regex
+
+RULE "A gitleaks facebook-page-access-token was detected which attempts to identify hard-coded credentials. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module)." : IValidationArchitecture
+  ID: "SEMGREP-SEC-HARDCODE"
+  DESCRIPTION: "A gitleaks facebook-page-access-token was detected which attempts to identify hard-coded credentials. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module)."
+  SEVERITY: Info
+  CATEGORY: "Security"
+  APPLIES_TO: ["regex"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"regex\":[{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"},{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"},{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"}]}"
+
+  VIOLATIONS:
+    - "A gitleaks facebook-page-access-token was detected which attempts to identify hard-coded credentials. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module)."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "A gitleaks facebook-page-access-token was detected which attempts to identify hard-coded credentials. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module). This can lead to security vulnerabilities. (hardcoded secrets)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 3
+    SOURCE_GROUP: "hardcoded-secrets"
+
+END RULE

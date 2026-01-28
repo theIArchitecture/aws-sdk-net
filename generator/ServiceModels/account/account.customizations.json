@@ -1,0 +1,13 @@
+{
+    "shapeModifiers": {
+        "*": {
+            "modify": [
+                {
+                    "errorType": {
+                        "emitPropertyName": "RequestErrorType"
+                    }
+                }
+            ]
+        }
+    }
+}

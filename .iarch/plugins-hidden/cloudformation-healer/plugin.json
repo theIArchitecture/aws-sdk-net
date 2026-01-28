@@ -1,0 +1,19 @@
+{
+  "id": "cloudformation-healer",
+  "version": "1.0.0",
+  "name": "AWS CloudFormation Architecture Healer",
+  "description": "Automatically fixes architectural violations in CloudFormation templates by adding missing resources, enabling required properties, and configuring best practices",
+  "type": "Healer",
+  "languages": ["cloudformation", "aws"],
+  "entryPoint": "healer.py",
+  "dependencies": [
+    "PyYAML (pip install pyyaml)"
+  ],
+  "author": "IArchitecture",
+  "fixes": [
+    "Adds Target Groups with sticky sessions to Load Balancers",
+    "Enables MultiAZ on RDS instances",
+    "Adds read replicas to production databases",
+    "Configures auto-scaling policies for ASGs"
+  ]
+}

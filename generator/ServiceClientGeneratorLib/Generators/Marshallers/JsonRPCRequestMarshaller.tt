@@ -1,0 +1,274 @@
+﻿<#@ template language="C#" inherits="JsonRPCStructureMarshaller" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#
+	AddLicenseHeader();
+
+	AddCommonUsingStatements();
+#>
+using System.Text.Json;
+using System.Buffers;
+#if !NETFRAMEWORK
+using ThirdParty.RuntimeBackports;
+#endif
+#pragma warning disable CS0612,CS0618
+namespace <#=this.Config.Namespace #>.Model.Internal.MarshallTransformations
+{
+	/// <summary>
+	/// <#=this.Operation.Name #> Request Marshaller
+	/// </summary>       
+	public class <#=this.Operation.Name #>RequestMarshaller : IMarshaller<IRequest, <#=this.Operation.Name #>Request> , IMarshaller<IRequest,AmazonWebServiceRequest>
+	{
+        /// <summary>
+        /// Marshaller the request object to the HTTP request.
+        /// </summary>  
+        /// <param name="input"></param>
+        /// <returns></returns>
+		public IRequest Marshall(AmazonWebServiceRequest input)
+        {
+            return this.Marshall((<#=this.Operation.Name #>Request)input);
+        }
+
+        /// <summary>
+        /// Marshaller the request object to the HTTP request.
+        /// </summary>  
+        /// <param name="publicRequest"></param>
+        /// <returns></returns>
+		public IRequest Marshall(<#=this.Operation.Name #>Request publicRequest)
+		{
+			IRequest request = new DefaultRequest(publicRequest, "<#=this.Config.Namespace #>");
+<#
+	if ((this.Config.ServiceModel.H2Support == H2SupportDegree.Optional && this.Operation.IsEventStreamBidi) || (this.Config.ServiceModel.H2Support == H2SupportDegree.EventStream && this.Operation.IsEventStreamOutput) || this.Config.ServiceModel.H2Support == H2SupportDegree.Required)
+	{
+#>
+#if NET8_0_OR_GREATER
+            request.HttpProtocolVersion = System.Net.HttpVersion.Version20;
+#endif
+<#
+	}
+	if (this.Operation.IsEventStreamInput)
+	{
+		var eventStreamMember = this.Operation.RequestEventStreamingMember;
+#>
+            request.Headers["Content-Type"] = "application/vnd.amazon.eventstream";
+            request.EventStreamPublisher = new <#=eventStreamMember.Shape.Name#>PublisherMarshaller(publicRequest.<#=eventStreamMember.PropertyName#>);
+
+<#
+	}
+
+   SetCompressionAlgorithmEncoding(this.Operation);
+
+   if (!string.IsNullOrEmpty(this.Config.ServiceModel.TargetPrefix))
+	{
+#>
+			string target = "<#=this.Config.ServiceModel.TargetPrefix #>.<#=this.Operation.Name #>";
+			request.Headers["X-Amz-Target"] = target;
+<#
+	}
+
+	var payload = this.Operation.RequestPayloadMember;
+	if (this.Operation.HttpMethod != "GET" && this.Operation.HttpMethod != "DELETE")
+	{
+
+		if (this.Config.ServiceModel.Customizations.OverrideContentType != null)
+		{
+#>
+			request.Headers["Content-Type"] = "<#=this.Config.ServiceModel.Customizations.OverrideContentType #>";
+<#
+		}
+		else if (this.Config.ServiceModel.Type != ServiceType.Rest_Json)
+		{
+#>
+			request.Headers["Content-Type"] = "application/x-amz-json-<#=this.Config.ServiceModel.JsonVersion #>";
+<#
+		}
+		else if (payload?.Shape.IsString == true)
+		{
+#>
+			request.Headers["Content-Type"] = "text/plain";
+<#
+		}
+		else if (this.Operation.RequestHasBodyMembers || this.Operation.RequestPayloadMember != null)
+		{
+#>
+			request.Headers["Content-Type"] = "application/json";
+<#
+		}
+	}
+#>
+            request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "<#=this.Config.ServiceModel.APIVersion #>";
+            request.HttpMethod = "<#=this.Operation.HttpMethod #>";
+
+<#
+	if (this.Config.ServiceModel.IsAwsQueryCompatible)
+	{
+#>
+			request.Headers[Amazon.Util.HeaderKeys.XAmzQueryMode] = "true";
+<#
+	}
+	var requestStructure = this.Operation.RequestStructure;
+	
+    // Generates code to add members of the request to the request being created by the marshaller
+	ProcessRequestUri(this.Operation);
+
+	if (this.Config.ServiceModel.Type == ServiceType.Rest_Json)
+	{
+		ProcessUriMembers("publicRequest", this.Operation);
+		ProcessQueryStringMembers("publicRequest", this.Operation);
+	}
+#>
+			request.ResourcePath = "<#=this.Operation.RequestUri #>";
+<#  
+
+    var shouldMarshallPayload = (payload != null && !payload.IsMemoryStream && !payload.Shape.IsString && !payload.Shape.IsEventStream);
+	// Process any members which are marshalled as part of the request body
+	if (this.Operation.RequestHasBodyMembers || shouldMarshallPayload)
+	{
+#>
+#if !NETFRAMEWORK
+			using ArrayPoolBufferWriter<byte> arrayPoolBufferWriter = new ArrayPoolBufferWriter<byte>();
+			using Utf8JsonWriter writer = new Utf8JsonWriter(arrayPoolBufferWriter);
+#else
+            using var memoryStream = new MemoryStream();
+			using Utf8JsonWriter writer = new Utf8JsonWriter(memoryStream);
+#endif
+<#		
+		if (shouldMarshallPayload)
+		{
+#>
+			var context = new JsonMarshallerContext(request, writer);
+<#		
+			ProcessStructure(0, "publicRequest." + payload.PropertyName, payload.Shape);
+#>
+			writer.Flush();
+<#
+		}
+		else
+		{
+#>
+			writer.WriteStartObject();
+			var context = new JsonMarshallerContext(request, writer);
+<#		
+			ProcessMembers(0, "publicRequest", this.Operation.RequestBodyMembers);
+#>
+			writer.WriteEndObject();
+			writer.Flush();
+<#
+		}
+#>
+			// ToArray() must be called here because aspects of sigv4 signing require a byte array
+#if !NETFRAMEWORK
+			request.Content = arrayPoolBufferWriter.WrittenMemory.ToArray();
+#else
+			request.Content = memoryStream.ToArray();
+#endif
+<#
+			GenerateRequestChecksumHandling(this.Operation, "snippet");
+#>			
+
+<#
+	}
+	else if (payload?.Shape.IsString == true)
+	{
+#>
+			request.Content = System.Text.Encoding.UTF8.GetBytes(publicRequest.<#= payload.PropertyName #>);
+<#
+	}
+    else if (payload?.IsMemoryStream == true)
+    {
+#>
+			request.ContentStream =  publicRequest.<#=payload.PropertyName#> ?? new MemoryStream();
+<#		
+		var requiresLength = payload.RequiresLength;
+		if (!requiresLength && payload.Shape.IsStreaming && this.Operation.AuthType == OperationAuthType.V4UnsignedBody)
+		{
+#>
+			if (request.ContentStream.CanSeek)
+			{
+				request.ContentStream.Seek(0, SeekOrigin.Begin);
+				request.Headers[Amazon.Util.HeaderKeys.ContentLengthHeader] =  
+					request.ContentStream.Length.ToString(CultureInfo.InvariantCulture);
+			}
+			else
+			{
+				request.Headers[Amazon.Util.HeaderKeys.TransferEncodingHeader] = "chunked";
+			}
+<#
+		}
+		else
+		{
+			if (payload.Shape.IsStreaming && requiresLength)
+			{
+#>
+			if (!request.ContentStream.CanSeek)
+			{
+				throw new System.InvalidOperationException("Cannot determine stream length for the payload when content-length is required.");
+			}
+<#
+			}
+#>
+			if(request.ContentStream.CanSeek)
+			{
+				request.ContentStream.Seek(0, SeekOrigin.Begin);
+			}
+			request.Headers[Amazon.Util.HeaderKeys.ContentLengthHeader] =
+				request.ContentStream.Length.ToString(CultureInfo.InvariantCulture);
+<#
+		}
+#>
+			request.Headers[Amazon.Util.HeaderKeys.ContentTypeHeader] = "application/octet-stream";
+<#
+    }
+	else if (payload?.Shape.IsPrimitiveType == true)
+	{
+		// At this point, all valid configurations have been handled.  Valid use of payload is defined:
+		// https://awslabs.github.io/smithy/1.0/spec/core/http-traits.html#httppayload-trait
+		throw new Exception(
+			$"{payload.PropertyName} can not be a Payload as Type {payload.Shape.Type} is not a valid target for the httpPayload trait.  " +
+			"The httpPayload trait can be applied to structure members that target a string, blob, structure, union, document, set, map, or list.");
+	}
+	else if (this.Config.ServiceModel.Type == ServiceType.Json)
+	{
+#>
+			var content = "{}";
+            request.Content = System.Text.Encoding.UTF8.GetBytes(content);
+<#
+				GenerateRequestChecksumHandling(this.Operation, "content");
+#>
+<#
+	}
+
+	if (this.Config.ServiceModel.Type == ServiceType.Rest_Json)
+	{
+		ProcessHeaderMembers("publicRequest", this.Operation.RequestHeaderMembers);		
+	}
+	
+	if (this.Operation.UnsignedPayload)
+	{
+#>
+			request.DisablePayloadSigning = true;
+<#	}
+
+	// If there aren't any members that are marshalled as part of the body or streamed	
+	if (this.Operation.UseQueryString)
+	{
+#>
+			request.UseQueryString = true;
+<#	}
+
+	// We skip endpoint host prefix handling for S3 and S3 Control as it's implemented by endpoint rules.
+	if (!string.IsNullOrEmpty(this.Operation.EndpointHostPrefix) && this.Config.ServiceId != "S3" && this.Config.ServiceId != "S3 Control")
+	{
+		ProcessEndpointHostPrefixMembers(3, "publicRequest", this.Operation);
+	}
+#>
+
+			return request;
+		}
+<#				
+		this.AddRequestSingletonMethod();
+#>
+	}
+}

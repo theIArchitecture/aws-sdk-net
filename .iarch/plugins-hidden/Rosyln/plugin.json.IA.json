@@ -1,0 +1,9 @@
+{
+  "id": "architecture-validator",
+  "version": "1.0.0",
+  "name": "Multi-File Architecture Validator",
+  "type": "Validator",
+  "languages": ["csharp", "java", "python", "typescript", "javascript"],
+  "entryPoint": "IArchitecture.ArchitectureRules.dll",
+  "dependencies": []
+}

@@ -1,0 +1,36 @@
+{
+    "shapeModifiers": {
+        "CreateDBInstanceMessage": {
+            "modify": [
+                {
+                    "PubliclyAccessible": { "deprecatedMessage": "This parameter is not supported" }
+                }
+            ]
+        },
+        "DBInstance": {
+            "modify": [
+                {
+                    "PubliclyAccessible": { "deprecatedMessage": "This parameter is not supported" }
+                }
+            ]
+        },
+        "ModifyDBInstanceMessage": {
+            "modify": [
+                {
+                    "PubliclyAccessible": { "deprecatedMessage": "This parameter is not supported" }
+                }
+            ]
+        }
+    },
+    
+    "runtimePipelineOverride": {
+        "overrides": [
+            {
+                "operation": "addBefore",
+                "newType": "Amazon.Neptune.Internal.PreSignedUrlRequestHandler",
+                "targetType": "Amazon.Runtime.Internal.Marshaller",
+                "constructorInput": "this.ExplicitAWSCredentials ?? this.Config.DefaultAWSCredentials"
+            }
+        ]
+    }  
+}

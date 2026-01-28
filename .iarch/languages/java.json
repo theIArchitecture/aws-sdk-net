@@ -1,0 +1,130 @@
+{
+  "language": "java",
+  "displayName": "Java (AWS SDK)",
+  "fileExtensions": [".java"],
+
+  "layerDetection": {
+    "layers": {
+      "Base": {
+        "pathPatterns": ["/core/", "/runtime/", "\\\\core\\\\", "\\\\runtime\\\\", "/auth/", "\\\\auth\\\\", "/client-core/", "\\\\client-core\\\\"],
+        "baseClassPatterns": ["AmazonWebServiceClient", "AmazonWebServiceRequest", "AmazonWebServiceResult"],
+        "interfacePatterns": ["AmazonWebServiceClient", "RequestHandler", "CredentialsProvider"],
+        "namingPatterns": ["^com\\.amazonaws\\..*", ".*ClientConfiguration$", ".*Credentials.*", ".*Auth.*"],
+        "importPatterns": ["com\\.amazonaws\\.auth\\..*", "com\\.amazonaws\\.client\\..*", "com\\.amazonaws\\.core\\..*"]
+      },
+
+      "Model": {
+        "pathPatterns": ["/model/", "\\\\model\\\\", "/shapes/", "\\\\shapes\\\\"],
+        "baseClassPatterns": [],
+        "interfacePatterns": [],
+        "namingPatterns": ["Request$", "Response$", ".*Shape$", ".*Builder$"],
+        "importPatterns": []
+      },
+
+      "Internal": {
+        "pathPatterns": ["/internal/", "\\\\internal\\\\", "/utils/", "\\\\utils\\\\", "/util/", "\\\\util\\\\"],
+        "baseClassPatterns": [],
+        "interfacePatterns": [],
+        "namingPatterns": ["Util$", ".*Util", "Helper$", ".*Helper", ".*Visitor$"],
+        "importPatterns": []
+      },
+
+      "Client": {
+        "pathPatterns": ["/codegen/", "\\\\codegen\\\\", "/generators/", "\\\\generators\\\\"],
+        "baseClassPatterns": [],
+        "interfacePatterns": [],
+        "namingPatterns": [".*Generator$", ".*Writer$", ".*Plugin$", ".*Integration$"],
+        "importPatterns": []
+      }
+    }
+  },
+
+  "parsingPatterns": {
+    "namespace": "^\\s*package\\s+([\\w\\.]+)\\s*;",
+    "import": "^\\s*import\\s+(?<modifier>static\\s+)?(?<module>[\\w\\.\\*]+)\\s*;",
+    "typeDeclaration": "(?:@[\\w.]+(?:\\([^)]*\\))?\\s*)*(?:public\\s+|private\\s+|protected\\s+)?(?:static\\s+)?(?:final\\s+)?(?:abstract\\s+)?(class|interface|enum|@interface)\\s+(\\w+)(?:<[^>]+>)?(?:\\s+(?:extends|implements)\\s+[\\w\\s,<>.]+)?\\s*\\{",
+    "typeKeywords": ["class", "interface", "enum", "@interface"],
+    "methodDeclaration": "(?:@[\\w.]+(?:\\([^)]*\\))?\\s*)*(?:public\\s+|private\\s+|protected\\s+)?(?:static\\s+)?(?:final\\s+)?(?:synchronized\\s+)?(?:native\\s+)?(?:<[^>]+>\\s+)?([\\w<>,\\s\\[\\]]+)\\s+(\\w+)\\s*\\(([^)]*)\\)(?:\\s+throws\\s+[\\w\\s,]+)?",
+    "instantiation": "new\\s+([\\w.]+)(?:<[^>]+>)?\\s*\\(",
+    "commentSingleLine": "//(.*)$",
+    "commentMultiLine": "/\\*(.*?)\\*/",
+    "commentDocumentation": "/\\*\\*(.*?)\\*/"
+  },
+
+  "plainImportBehavior": "skip",
+
+  "fieldExtractionPatterns": [
+    {
+      "name": "field_declaration",
+      "description": "Matches field declarations",
+      "pattern": "(?:@[\\w.]+(?:\\([^)]*\\))?\\s*)*(?:public\\s+|private\\s+|protected\\s+)?(?:static\\s+|final\\s+|transient\\s+|volatile\\s+)*([\\w<>,\\s\\[\\]]+)\\s+(\\w+)\\s*(?:;|=)",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": false
+    },
+    {
+      "name": "enum_constant",
+      "description": "Matches enum constants",
+      "pattern": "^\\s+(\\w+)(?:\\s*\\([^)]*\\))?(?:\\s*,|\\s*;)?",
+      "typeGroup": 0,
+      "nameGroup": 1,
+      "isProperty": false
+    },
+    {
+      "name": "annotation_element",
+      "description": "Matches annotation type element declarations",
+      "pattern": "([\\w<>]+)\\s+(\\w+)\\s*\\(\\s*\\)(?:\\s+default)?",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": false
+    },
+    {
+      "name": "constant_declaration",
+      "description": "Matches public static final constants",
+      "pattern": "public\\s+static\\s+final\\s+([\\w<>]+)\\s+(\\w+)\\s*=",
+      "typeGroup": 1,
+      "nameGroup": 2,
+      "isProperty": false
+    }
+  ],
+
+  "transformationRules": {
+    "importTemplate": "import {namespace};",
+    "importInsertLocation": "after_last_import",
+    "importRemovalPattern": "^\\s*import\\s+{namespace}\\s*;\\s*$"
+  },
+
+  "formattingRules": {
+    "indentSize": 4,
+    "increaseIndentTriggers": ["{"],
+    "decreaseIndentTriggers": ["}"],
+    "decreaseBeforeLine": true
+  },
+
+  "syntaxValidation": {
+    "balancedPairs": [
+      { "open": "{", "close": "}" },
+      { "open": "(", "close": ")" },
+      { "open": "[", "close": "]" },
+      { "open": "<", "close": ">" }
+    ],
+    "invalidPatterns": [";;", "import\\s+[^;]*$"]
+  },
+
+  "commentStyles": ["//", "/*", "*/", "/**"],
+
+  "additionalPatterns": {
+    "annotation": "@([\\w.]+)(?:\\(([^)]*)\\))?",
+    "generic_type": "(\\w+)<([^>]+)>",
+    "lambda_expression": "\\(([^)]*)\\)\\s*->",
+    "method_reference": "([\\w.]+)::(\\w+)",
+    "var_keyword": "var\\s+(\\w+)\\s*=",
+    "sealed_class": "(?:sealed|non-sealed)\\s+(?:class|interface)\\s+(\\w+)",
+    "record_declaration": "record\\s+(\\w+)(?:\\s*\\(([^)]*)\\))?",
+    "switch_expression": "switch\\s*\\(([^)]*)\\)\\s*\\{",
+    "text_block": "\"\"\"",
+    "instanceof_pattern": "instanceof\\s+([\\w<>]+)(?:\\s+(\\w+))?",
+    "functional_interface": "@FunctionalInterface",
+    "stream_operation": "\\.(?:map|filter|collect|reduce|forEach|stream)\\("
+  }
+}

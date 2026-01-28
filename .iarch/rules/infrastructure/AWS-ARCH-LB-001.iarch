@@ -1,0 +1,86 @@
+RULE "AWS Load Balancer Sticky Sessions" : IHealerArchitecture
+
+ID: "AWS-ARCH-LB-001"
+VERSION: "1.0.0"
+
+DESCRIPTION: "Application Load Balancers must have sticky sessions configured via Target Groups to maintain session affinity and prevent user session loss"
+
+SEVERITY: Fatal
+
+CATEGORY: "AWS_Infrastructure_Architecture"
+
+LAYER: BASE
+
+APPLIES_TO: ["cloudformation", "terraform", "aws"]
+
+EDUCATION:
+  DOCS_URL: "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html"
+
+
+  BUSINESS_IMPACT: "Session loss causes:\n- Abandoned shopping carts (average $50K/month revenue loss)\n- User frustration and 15-20% churn increase\n- Increased support tickets\n- Poor app store ratings"
+
+  QUICK_FIX: "Add a Target Group resource with sticky sessions enabled:\n1. Create AWS::ElasticLoadBalancingV2::TargetGroup\n2. Set TargetGroupAttributes with stickiness.enabled=true\n3. Configure stickiness.type=lb_cookie\n4. Set duration (recommended: 86400 seconds = 24 hours)"
+
+  ARCHITECTURAL_PATTERN: "For stateful web applications, always use sticky sessions (session affinity) to ensure user requests route to the same backend instance. For stateless applications, sticky sessions are not required but don't harm performance."
+
+  ALTERNATIVES: "- Use distributed session storage (Redis, DynamoDB) for true stateless architecture\n- Implement client-side session management with JWT tokens\n- Use AWS Application Load Balancer with sticky sessions (recommended for existing apps)"
+
+# Infrastructure plugin-based validation
+PLUGIN:
+  ID: "cloudformation-validator"
+  CONFIG:
+    check: "load_balancer_sticky_sessions"
+
+# Auto-healing with infrastructure healer
+FIXES:
+  PLUGIN:
+    ID: "cloudformation-healer"
+    CONFIG:
+      add_sticky_target_group: true
+      stickiness_duration: "86400"
+
+  TEACHING: "Added Target Group with sticky sessions enabled. Review the VpcId reference and adjust if needed. Consider implementing distributed session storage for better scalability."
+
+EXAMPLES:
+  VIOLATION: |
+    # CloudFormation template
+    Resources:
+      MyLoadBalancer:
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Properties:
+          Name: app-lb
+          Subnets: [subnet-1, subnet-2]
+          # ❌ VIOLATION: No Target Group with sticky sessions
+
+  COMPLIANT: |
+    # CloudFormation template
+    Resources:
+      MyLoadBalancer:
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Properties:
+          Name: app-lb
+          Subnets: [subnet-1, subnet-2]
+
+      MyTargetGroup:
+        Type: AWS::ElasticLoadBalancingV2::TargetGroup
+        Properties:
+          VpcId: !Ref VPC
+          Protocol: HTTP
+          Port: 80
+          TargetGroupAttributes:
+            - Key: stickiness.enabled
+              Value: true
+            - Key: stickiness.type
+              Value: lb_cookie
+            - Key: stickiness.lb_cookie.duration_seconds
+              Value: 86400
+          # ✅ COMPLIANT: Sticky sessions configured
+
+TAGS:
+  - AWS
+  - Infrastructure
+  - LoadBalancer
+  - SessionAffinity
+  - HighAvailability
+
+END RULE

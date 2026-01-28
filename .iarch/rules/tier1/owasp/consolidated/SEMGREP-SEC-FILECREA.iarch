@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-FILECREA
+# Group: file-creation-in
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "File creation in shared tmp directory without using `io.CreateTemp`." : IValidationArchitecture
+  ID: "SEMGREP-SEC-FILECREA"
+  DESCRIPTION: "File creation in shared tmp directory without using `io.CreateTemp`."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"ioutil.WriteFile(\\u0022=~//tmp/.*$/\\u0022, ...)\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"os.Create(\\u0022=~//tmp/.*$/\\u0022, ...)\"},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"os.WriteFile(\\u0022=~//tmp/.*$/\\u0022, ...)\"}]}"
+
+  VIOLATIONS:
+    - "File creation in shared tmp directory without using `io.CreateTemp`."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "File creation in shared tmp directory without using `io.CreateTemp`. This can lead to security vulnerabilities. (file creation in)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A01_2021-Broken_Access_Control"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "file-creation-in"
+
+END RULE

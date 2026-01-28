@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-THEOBJEC
+# Group: the-object-is
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "The object is passed strictly to jsonwebtoken.sign(...) Make sure that sensitive information is not exposed through JWT token payload." : IValidationArchitecture
+  ID: "SEMGREP-SEC-THEOBJEC"
+  DESCRIPTION: "The object is passed strictly to jsonwebtoken.sign(...) Make sure that sensitive information is not exposed through JWT token payload."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":1,\"Pattern\":\"$JWT = require(\\u0027jsonwebtoken\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_OR_0\",\"Type\":1,\"Pattern\":\"function (...,$INPUT,...) {...}\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_1\",\"Type\":1,\"Pattern\":\"function $F(...,$INPUT,...) {...}\"}]},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"$JWT.sign($INPUT,...)\"}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":1,\"Pattern\":\"$JWT = require(\\u0027jsonwebtoken\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_OR_0\",\"Type\":1,\"Pattern\":\"function (...,$INPUT,...) {...}\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_1\",\"Type\":1,\"Pattern\":\"function $F(...,$INPUT,...) {...}\"}]},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"$JWT.sign($INPUT,...)\"}]}"
+
+  VIOLATIONS:
+    - "The object is passed strictly to jsonwebtoken.sign(...) Make sure that sensitive information is not exposed through JWT token payload."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "The object is passed strictly to jsonwebtoken.sign(...) Make sure that sensitive information is not exposed through JWT token payload. This can lead to security vulnerabilities. (the object is)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A04_2021-Insecure_Design"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "the-object-is"
+
+END RULE

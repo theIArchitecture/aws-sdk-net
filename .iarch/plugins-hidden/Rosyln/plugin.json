@@ -1,0 +1,9 @@
+{
+  "id": "roslyn-validator-healers",
+  "version": "1.0.0",
+  "name": "Roslyn Validators",
+  "type": "Validator",
+  "languages": ["csharp"],
+  "entryPoint": "IArchitecture.RoslynRules.dll",
+  "dependencies": []
+}

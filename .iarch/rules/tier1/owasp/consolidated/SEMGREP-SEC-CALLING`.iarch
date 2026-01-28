@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-CALLING`
+# Group: calling-`gc`-suggests
+# Merged from 1 individual language-specific rules
+# Languages: java, kotlin
+
+RULE "Calling `gc` suggests to the JVM that the garbage collector should be\nrun, and memory should be reclaimed. This is only a suggestion, and there\nis no guarantee that anything will happen. Relying on this behavior for\ncorrectness or memory management is an anti-pattern.\n" : IValidationArchitecture
+  ID: "SEMGREP-SEC-CALLING`"
+  DESCRIPTION: "Calling `gc` suggests to the JVM that the garbage collector should be\nrun, and memory should be reclaimed. This is only a suggestion, and there\nis no guarantee that anything will happen. Relying on this behavior for\ncorrectness or memory management is an anti-pattern.\n"
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java", "kotlin"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"System.gc()\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"Runtime.getRuntime().gc()\"}],\"kotlin\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"System.gc()\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"Runtime.getRuntime().gc()\"}]}"
+
+  VIOLATIONS:
+    - "Calling `gc` suggests to the JVM that the garbage collector should be\nrun, and memory should be reclaimed. This is only a suggestion, and there\nis no guarantee that anything will happen. Relying on this behavior for\ncorrectness or memory management is an anti-pattern.\n"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Calling `gc` suggests to the JVM that the garbage collector should be\nrun, and memory should be reclaimed. This is only a suggestion, and there\nis no guarantee that anything will happen. Relying on this behavior for\ncorrectness or memory management is an anti-pattern.\n This can lead to security vulnerabilities. (calling `gc` suggests)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://stackoverflow.com/questions/2414105/why-is-it-bad-practice-to-call-system-gc"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "calling-`gc`-suggests"
+
+END RULE

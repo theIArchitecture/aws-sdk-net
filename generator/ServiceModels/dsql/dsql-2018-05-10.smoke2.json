@@ -1,0 +1,51 @@
+{
+  "version" : 2,
+  "testCases" : [ {
+    "id" : "GetVpcEndpointServiceNameNotFound",
+    "operationName" : "GetVpcEndpointServiceName",
+    "input" : {
+      "identifier" : "ruabtlcu6nqjdl6k6jjcug67ta"
+    },
+    "expectation" : {
+      "failure" : {
+        "errorId" : "ResourceNotFoundException"
+      }
+    },
+    "config" : {
+      "region" : "us-east-1",
+      "useFips" : false,
+      "useDualstack" : false,
+      "useAccountIdRouting" : true
+    }
+  }, {
+    "id" : "ListClustersSuccess",
+    "operationName" : "ListClusters",
+    "input" : { },
+    "expectation" : {
+      "success" : { }
+    },
+    "config" : {
+      "region" : "us-east-1",
+      "useFips" : false,
+      "useDualstack" : false,
+      "useAccountIdRouting" : true
+    }
+  }, {
+    "id" : "GetClusterNotFound",
+    "operationName" : "GetCluster",
+    "input" : {
+      "identifier" : "ruabtlcu6nqjdl6k6jjcug67ta"
+    },
+    "expectation" : {
+      "failure" : {
+        "errorId" : "ResourceNotFoundException"
+      }
+    },
+    "config" : {
+      "region" : "us-east-1",
+      "useFips" : false,
+      "useDualstack" : false,
+      "useAccountIdRouting" : true
+    }
+  } ]
+}

@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-COD-`UNDEFIN
+# Group: `undefined`-is-not
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "`undefined` is not a reserved keyword in Javascript, so this is \"valid\" Javascript but highly confusing and likely to result in bugs." : IValidationArchitecture
+  ID: "SEMGREP-COD-`UNDEFIN"
+  DESCRIPTION: "`undefined` is not a reserved keyword in Javascript, so this is \"valid\" Javascript but highly confusing and likely to result in bugs."
+  SEVERITY: Warning
+  CATEGORY: "CodeQuality"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "CodeQuality"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"undefined = $X;\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"var undefined = $X;\"},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"let undefined = $X;\"},{\"Name\":\"SEMGREP_PATTERN_4\",\"Type\":0,\"Pattern\":\"const undefined = $X;\"}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"undefined = $X;\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"var undefined = $X;\"},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"let undefined = $X;\"},{\"Name\":\"SEMGREP_PATTERN_4\",\"Type\":0,\"Pattern\":\"const undefined = $X;\"}]}"
+
+  VIOLATIONS:
+    - "`undefined` is not a reserved keyword in Javascript, so this is \"valid\" Javascript but highly confusing and likely to result in bugs."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "`undefined` is not a reserved keyword in Javascript, so this is \"valid\" Javascript but highly confusing and likely to result in bugs. This can lead to security vulnerabilities. (`undefined` is not)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "`undefined`-is-not"
+
+END RULE

@@ -1,0 +1,35 @@
+# Cross-Boundary Data Type Enforcement Rule
+# Detects violations of service/architecture boundary contracts
+# Ensures types crossing boundaries use proper contract types (DTOs, Contracts)
+
+RULE "CROSS-BOUNDARY-TYPE-ENFORCEMENT" : IMetaArchitecture
+  ID: "ARCH-BOUNDARY-TYPES-001"
+  DESCRIPTION: "Type crossing service/architecture boundary does not use required contract namespace"
+  SEVERITY: Error
+  CATEGORY: "Architecture_Quality"
+  APPLIES_TO: ["csharp", "java", "python", "typescript", "javascript"]
+
+  PLUGIN:
+    ID: "architecture-validator"
+    SCOPE: "tree"
+    CONFIG:
+      validator: "CrossBoundaryType"
+      boundary_patterns: "[{\"from\":\"Amazon.S3\",\"to\":\"Amazon.Runtime.*\",\"required_type_namespace\":\"*.Model\",\"message\":\"S3 client should use Model types when calling Runtime (not internal types)\"},{\"from\":\"Amazon.*\",\"to\":\"Amazon.Runtime.Internal.*\",\"required_type_namespace\":\"Amazon.Runtime.Model\",\"message\":\"Services should not directly use Runtime.Internal - use public Runtime API\"},{\"from\":\"Amazon.S3.*\",\"to\":\"Amazon.DynamoDBv2.*\",\"required_type_namespace\":\"*.Model\",\"message\":\"Cross-service dependencies should use Model types (DTOs)\"}]"
+
+  EDUCATION:
+    DOCS_URL: "https://martinfowler.com/bliki/BoundedContext.html"
+    WHY_IT_MATTERS: "This rule ensures that services communicate with each other using a consistent and well-defined interface, which is critical for maintaining the reliability, scalability, and performance of the system as a whole. When services use the same namespace for their contracts, they can easily find and use each other's APIs, making it easier to develop, test, and deploy the system. Additionally, using a consistent naming convention helps to reduce confusion and improve code readability, which is especially important in large and complex systems where multiple teams may be working on different parts of the system simultaneously"
+    BUSINESS_IMPACT: "The business impact of violating this rule is that it can lead to confusion and errors in communication between different services or systems, which can result in delays, additional costs, and a negative impact on the customer experience. Additionally, the failure to use required contract namespaces can make it more difficult to maintain and update the system over time, leading to a higher risk of errors and downtime"
+    QUICK_FIX: "Create contract types (DTOs or interfaces) in the required namespace (e.g., *.Contracts or *.DTOs). Update the code to use these contract types instead of directly referencing implementation types across boundaries. Apply the Dependency Inversion Principle to depend on abstractions, not concrete implementations."
+
+  ARCHITECTURAL_CONTEXT:
+    PROJECT_TYPE: "SDK"
+    ARCHITECTURE_PATTERN: "Service_Oriented"
+    DESIGN_PRINCIPLES: ["Service_Contracts", "Model_Abstraction", "Service_Independence"]
+
+  VIOLATIONS:
+    - "Cross-boundary type violation: {{SOURCE_NAMESPACE}} → {{TARGET_NAMESPACE}} (required: {{REQUIRED_TYPE_NAMESPACE}})"
+    - "Service boundary breach: Type in {{TARGET_NAMESPACE}} accessed from {{SOURCE_NAMESPACE}} without contract"
+    - "Architectural boundary violation: Types crossing {{FROM_PATTERN}} → {{TO_PATTERN}} must use {{REQUIRED_TYPE_NAMESPACE}}"
+
+END_RULE

@@ -1,0 +1,6 @@
+{
+  "active": true,
+  "synopsis": "Initial Release.",
+  "generate-client-constructors": true,
+  "legacy-service-id": "IoTThingsGraph"
+}

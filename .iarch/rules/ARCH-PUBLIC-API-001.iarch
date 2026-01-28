@@ -1,0 +1,36 @@
+# Public API Surface Control Rule
+# Ensures only intentional types are exposed publicly (prevents accidental API surface expansion)
+
+RULE "PUBLIC-API-SURFACE-CONTROL" : IMetaArchitecture
+  ID: "ARCH-PUBLIC-API-001"
+  DESCRIPTION: "Public type exposed outside allowed public API namespaces"
+  SEVERITY: Error
+  CATEGORY: "Architecture_Quality"
+  APPLIES_TO: ["csharp", "java", "python", "typescript", "javascript"]
+
+  PLUGIN:
+    ID: "architecture-validator"
+    SCOPE: "tree"
+    CONFIG:
+      validator: "PublicApiSurface"
+      allowed_public_namespaces: "[\"Amazon.*\"]"
+      forbidden_public_namespaces: "[\"*.Internal\",\"*.Internal.*\"]"
+      message: "Public types should not be exposed in Internal namespaces - these are implementation details"
+
+  EDUCATION:
+    DOCS_URL: "https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers"
+    WHY_IT_MATTERS: "This rule ensures that public types are only exposed within allowed namespaces, which helps prevent naming conflicts and improves code readability. When a public type is exposed outside of its namespace, it can cause confusion for consumers of the API and make it difficult to maintain compatibility between versions. Additionally, exposing public types outside of their namespace can lead to security vulnerabilities if they are not properly secured. By following this rule, developers can ensure that their code is more reliable, maintainable, and secure"
+    BUSINESS_IMPACT: "Violating this rule can result in significant financial losses for the company due to increased costs associated with fixing and maintaining the violation, as well as loss of reputation and customer trust"
+    QUICK_FIX: "Move the public type to an allowed namespace (e.g., SDK, PublicAPI, or Contracts), or change the type's accessibility to internal/private if it should not be part of the public API. For example: change 'public class Utility' to 'internal class Utility' or move it to 'MyApp.SDK.Utility'"
+
+  ARCHITECTURAL_CONTEXT:
+    PROJECT_TYPE: "LIBRARY_SDK"
+    ARCHITECTURE_PATTERN: "API_DESIGN"
+    DESIGN_PRINCIPLES: ["Minimal_API_Surface", "Encapsulation", "Backward_Compatibility"]
+
+  VIOLATIONS:
+    - "Public type {{TYPE_NAME}} in namespace {{NAMESPACE}} is outside allowed public API namespaces"
+    - "Accidental API surface expansion: {{TYPE_NAME}} should not be public in {{NAMESPACE}}"
+    - "Public API violation: {{TYPE_NAME}} exposed from unauthorized namespace {{NAMESPACE}}"
+
+END_RULE

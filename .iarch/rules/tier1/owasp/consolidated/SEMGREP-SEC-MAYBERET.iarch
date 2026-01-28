@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-MAYBERET
+# Group: maybe-returning-wrong
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "maybe returning wrong error" : IValidationArchitecture
+  ID: "SEMGREP-SEC-MAYBERET"
+  DESCRIPTION: "maybe returning wrong error"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"if $F.Err() != nil {\\n        return ..., \\u003C... err ...\\u003E\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"if $F.Err() != nil {\\n        return \\u003C... err ...\\u003E\\n}\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "maybe returning wrong error"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "maybe returning wrong error This can lead to security vulnerabilities. (maybe returning wrong)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "maybe-returning-wrong"
+
+END RULE

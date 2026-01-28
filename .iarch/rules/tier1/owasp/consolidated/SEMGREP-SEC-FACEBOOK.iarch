@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-FACEBOOK
+# Group: facebook-oauth-detected
+# Merged from 1 individual language-specific rules
+# Languages: regex
+
+RULE "Facebook OAuth detected" : IValidationArchitecture
+  ID: "SEMGREP-SEC-FACEBOOK"
+  DESCRIPTION: "Facebook OAuth detected"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["regex"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"regex\":[{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"}]}"
+
+  VIOLATIONS:
+    - "Facebook OAuth detected"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Facebook OAuth detected This can lead to security vulnerabilities. (facebook oauth detected)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "facebook-oauth-detected"
+
+END RULE

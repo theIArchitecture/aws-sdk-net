@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-USERCONT
+# Group: user-controllable-string-passed
+# Merged from 1 individual language-specific rules
+# Languages: csharp
+
+RULE "User-controllable string passed to Razor.Parse. This leads directly to code execution in the context of the process." : IValidationArchitecture
+  ID: "SEMGREP-SEC-USERCONT"
+  DESCRIPTION: "User-controllable string passed to Razor.Parse. This leads directly to code execution in the context of the process."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["csharp"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"csharp\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":1,\"Pattern\":\"public ActionResult $METHOD(..., string $ARG,...){...}\\n\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":0,\"Pattern\":\"Razor.Parse(...)\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "User-controllable string passed to Razor.Parse. This leads directly to code execution in the context of the process."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "User-controllable string passed to Razor.Parse. This leads directly to code execution in the context of the process. This can lead to security vulnerabilities. (user controllable string passed)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://clement.notin.org/blog/2020/04/15/Server-Side-Template-Injection-(SSTI)-in-ASP.NET-Razor/"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "user-controllable-string-passed"
+
+END RULE

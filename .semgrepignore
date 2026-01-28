@@ -1,0 +1,65 @@
+# Semgrep Ignore File
+# Excludes build artifacts, minified files, tests, and tooling
+
+# Build outputs and distributions
+**/dist/**
+**/build/**
+**/out/**
+**/target/**
+**/bin/**
+**/obj/**
+**/.output/**
+
+# Minified and bundled files
+**/*.min.js
+**/*.min.css
+**/*.bundle.js
+**/*.chunk.js
+**/bundle.*.js
+**/vendor.js
+**/vendors.js
+
+# Node.js dependencies
+**/node_modules/**
+**/bower_components/**
+
+# Test files and directories
+**/__tests__/**
+**/__mocks__/**
+**/tests/**
+**/test/**
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
+
+# Build and development tooling
+**/scripts/**
+**/tools/**
+**/config/**
+**/webpack/**
+**/rollup/**
+**/vite/**
+**/.storybook/**
+**/eslint/**
+**/prettier/**
+
+# Generated and vendor code
+**/generated/**
+**/autogen/**
+**/vendor/**
+**/third_party/**
+**/thirdparty/**
+**/.next/**
+**/.nuxt/**
+
+# Documentation and examples
+**/docs/**
+**/examples/**
+**/demo/**
+**/samples/**
+
+# Lock files and configs
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

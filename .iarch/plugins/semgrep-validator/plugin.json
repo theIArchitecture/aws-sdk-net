@@ -1,0 +1,10 @@
+{
+  "id": "semgrep-validator",
+  "version": "1.0.0",
+  "name": "Semgrep Validator",
+  "type": "Validator",
+  "languages": ["python", "javascript", "typescript", "go", "java", "c", "cpp", "csharp", "rust", "ruby", "php"],
+  "entryPoint": "IArchitecture.SemgrepValidator.dll",
+  "dependencies": [],
+  "supportsBatching": true
+}

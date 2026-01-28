@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-WRONGLOC
+# Group: wrong-lock/unlock-pair?
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "Wrong lock/unlock pair?" : IValidationArchitecture
+  ID: "SEMGREP-SEC-WRONGLOC"
+  DESCRIPTION: "Wrong lock/unlock pair?"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$M.Lock()\\ndefer $M.RUnlock()\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$M.RLock()\\ndefer $M.Unlock()\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_2\",\"Type\":0,\"Pattern\":\"$M.Lock()\\ndefer $M.Lock()\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_3\",\"Type\":0,\"Pattern\":\"$M.RLock()\\ndefer $M.RLock()\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "Wrong lock/unlock pair?"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Wrong lock/unlock pair? This can lead to security vulnerabilities. (wrong lock/unlock pair?)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "wrong-lock/unlock-pair?"
+
+END RULE

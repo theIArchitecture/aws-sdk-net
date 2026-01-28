@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-DIRECTOR
+# Group: directory-listing/indexing-is
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and files. It is recommended to disable directory listing unless it is a public resource. If you need directory listing, ensure that sensitive files are inaccessible when querying the resource." : IValidationArchitecture
+  ID: "SEMGREP-SEC-DIRECTOR"
+  DESCRIPTION: "Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and files. It is recommended to disable directory listing unless it is a public resource. If you need directory listing, ensure that sensitive files are inaccessible when querying the resource."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$APP.use(require(\\u0027serve-index\\u0027)(...))\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"$SERVEINDEX = require(\\u0027serve-index\\u0027)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"import $SERVEINDEX from \\u0027serve-index\\u0027\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0_OR_2\",\"Type\":1,\"Pattern\":\"import * as $SERVEINDEX from \\u0027serve-index\\u0027\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_0\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_0_AND_0\",\"Type\":1,\"Pattern\":\"$VALUE = $SERVEINDEX(...)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_0_AND_1\",\"Type\":0,\"Pattern\":\"$VALUE(...)\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_1\",\"Type\":0,\"Pattern\":\"$APP.use(..., $SERVEINDEX(...), ...)\\n\"}]}]}]}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$APP.use(require(\\u0027serve-index\\u0027)(...))\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"$SERVEINDEX = require(\\u0027serve-index\\u0027)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"import $SERVEINDEX from \\u0027serve-index\\u0027\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_0_OR_2\",\"Type\":1,\"Pattern\":\"import * as $SERVEINDEX from \\u0027serve-index\\u0027\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_0\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_0_AND_0\",\"Type\":1,\"Pattern\":\"$VALUE = $SERVEINDEX(...)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_0_AND_1\",\"Type\":0,\"Pattern\":\"$VALUE(...)\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_1_OR_1_AND_1_OR_1\",\"Type\":0,\"Pattern\":\"$APP.use(..., $SERVEINDEX(...), ...)\\n\"}]}]}]}]}"
+
+  VIOLATIONS:
+    - "Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and files. It is recommended to disable directory listing unless it is a public resource. If you need directory listing, ensure that sensitive files are inaccessible when querying the resource."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and files. It is recommended to disable directory listing unless it is a public resource. If you need directory listing, ensure that sensitive files are inaccessible when querying the resource. This can lead to security vulnerabilities. (directory listing/indexing is)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://www.npmjs.com/package/serve-index"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "directory-listing/indexing-is"
+
+END RULE

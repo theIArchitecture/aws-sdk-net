@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-COD-THISYUMC
+# Group: this-yum-command
+# Merged from 1 individual language-specific rules
+# Languages: generic
+
+RULE "This yum command does not end with '&& yum clean all'. Running 'yum clean all' will remove cached data and reduce package size. (This must be performed in the same RUN step.)" : IValidationArchitecture
+  ID: "SEMGREP-COD-THISYUMC"
+  DESCRIPTION: "This yum command does not end with '&& yum clean all'. Running 'yum clean all' will remove cached data and reduce package size. (This must be performed in the same RUN step.)"
+  SEVERITY: Warning
+  CATEGORY: "CodeQuality"
+  APPLIES_TO: ["generic"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "CodeQuality"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"generic\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"yum $COMMAND\"}]}"
+
+  VIOLATIONS:
+    - "This yum command does not end with '&& yum clean all'. Running 'yum clean all' will remove cached data and reduce package size. (This must be performed in the same RUN step.)"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "This yum command does not end with '&& yum clean all'. Running 'yum clean all' will remove cached data and reduce package size. (This must be performed in the same RUN step.) This can lead to security vulnerabilities. (this yum command)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://github.com/hadolint/hadolint/wiki/DL3032"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "this-yum-command"
+
+END RULE

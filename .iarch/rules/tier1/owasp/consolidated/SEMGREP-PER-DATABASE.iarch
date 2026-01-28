@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-PER-DATABASE
+# Group: database-class-methods,
+# Merged from 1 individual language-specific rules
+# Languages: generic
+
+RULE "Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop." : IValidationArchitecture
+  ID: "SEMGREP-PER-DATABASE"
+  DESCRIPTION: "Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop."
+  SEVERITY: Fatal
+  CATEGORY: "Performance"
+  APPLIES_TO: ["generic"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Performance"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"generic\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"for (...) {\\n  ...\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"while (...) {\\n  ...\\n}\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_2\",\"Type\":1,\"Pattern\":\"do {\\n  ...\\n} while (...);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_2_OR_0\",\"Type\":0,\"Pattern\":\"Messaging.sendEmail(...);\\n\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_1\",\"Type\":0,\"Pattern\":\"Approval.ProcessSubmitRequest $REQUEST = new Approval.ProcessSubmitRequest();\\n\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_2\",\"Type\":0,\"Pattern\":\"System.enqueueJob(...);\\n\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_3\",\"Type\":0,\"Pattern\":\"System.schedule(...);\\n\"},{\"Name\":\"SEMGREP_PATTERN_2_OR_4\",\"Type\":0,\"Pattern\":\"System.scheduleBatch(...);\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop. This can lead to security vulnerabilities. (database class methods,)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "database-class-methods,"
+
+END RULE

@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-USEOF$WI
+# Group: use-of-$window.location.href
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "Use of $window.location.href can lead to open-redirect if user input is used for redirection." : IValidationArchitecture
+  ID: "SEMGREP-SEC-USEOF$WI"
+  DESCRIPTION: "Use of $window.location.href can lead to open-redirect if user input is used for redirection."
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$window.location.href = ...\\n\"}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$window.location.href = ...\\n\"}]}"
+
+  VIOLATIONS:
+    - "Use of $window.location.href can lead to open-redirect if user input is used for redirection."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Use of $window.location.href can lead to open-redirect if user input is used for redirection. This can lead to security vulnerabilities. (use of $window.location.href)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://docs.angularjs.org/api/ng/service/$sce#trustAsJs"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "use-of-$window.location.href"
+
+END RULE

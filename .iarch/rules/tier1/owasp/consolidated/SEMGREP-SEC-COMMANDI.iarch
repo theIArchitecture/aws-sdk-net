@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-COMMANDI
+# Group: command-injection
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "Detected non-literal calls to Deno.run(). This could lead to a command injection vulnerability." : IValidationArchitecture
+  ID: "SEMGREP-SEC-COMMANDI"
+  DESCRIPTION: "Detected non-literal calls to Deno.run(). This could lead to a command injection vulnerability."
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":1,\"Pattern\":\"function ... (..., $ARG,...) {...}\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SINK_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SINK_2_AND_0_OR_0\",\"Type\":0,\"Pattern\":\"Deno.run({cmd: [$INPUT,...]},...)\\n\"},{\"Name\":\"TAINT_SINK_2_AND_0_OR_1\",\"Type\":0,\"Pattern\":\"Deno.run({cmd: [\\u0022=~/(sh|bash|ksh|csh|tcsh|zsh)/\\u0022,\\u0022-c\\u0022,$INPUT,...]},...)\\n\"},{\"Name\":\"TAINT_SINK_2_AND_0_OR_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SINK_2_AND_0_OR_2_AND_0\",\"Type\":0,\"Pattern\":\"Deno.run({cmd: [$CMD,\\u0022-c\\u0022,$INPUT,...]},...)\\n\"},{\"Name\":\"TAINT_SINK_2_AND_0_OR_2_AND_1\",\"Type\":1,\"Pattern\":\"$CMD = \\u0022=~/(sh|bash|ksh|csh|tcsh|zsh)/\\u0022\\n...\\n\"}]}]}]}]}],\"typescript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":1,\"Pattern\":\"function ... (..., $ARG,...) {...}\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SINK_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SINK_2_AND_0_OR_0\",\"Type\":0,\"Pattern\":\"Deno.run({cmd: [$INPUT,...]},...)\\n\"},{\"Name\":\"TAINT_SINK_2_AND_0_OR_1\",\"Type\":0,\"Pattern\":\"Deno.run({cmd: [\\u0022=~/(sh|bash|ksh|csh|tcsh|zsh)/\\u0022,\\u0022-c\\u0022,$INPUT,...]},...)\\n\"},{\"Name\":\"TAINT_SINK_2_AND_0_OR_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SINK_2_AND_0_OR_2_AND_0\",\"Type\":0,\"Pattern\":\"Deno.run({cmd: [$CMD,\\u0022-c\\u0022,$INPUT,...]},...)\\n\"},{\"Name\":\"TAINT_SINK_2_AND_0_OR_2_AND_1\",\"Type\":1,\"Pattern\":\"$CMD = \\u0022=~/(sh|bash|ksh|csh|tcsh|zsh)/\\u0022\\n...\\n\"}]}]}]}]}]}"
+
+  VIOLATIONS:
+    - "Detected non-literal calls to Deno.run(). This could lead to a command injection vulnerability."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Detected non-literal calls to Deno.run(). This could lead to a command injection vulnerability. This can lead to security vulnerabilities. (command injection)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://deno.land/manual/examples/subprocess#simple-example"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "command-injection"
+
+END RULE

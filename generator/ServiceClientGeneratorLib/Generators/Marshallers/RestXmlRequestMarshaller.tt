@@ -1,0 +1,917 @@
+<#@ template language="C#" inherits="BaseRequestMarshaller" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Json.LitJson"#>
+<#
+	AddLicenseHeader();
+	
+	AddCommonUsingStatements();
+#>
+using System.Xml;
+
+#pragma warning disable CS0612,CS0618
+namespace <#=this.Config.Namespace #>.Model.Internal.MarshallTransformations
+{
+	/// <summary>
+	/// <#=this.Operation.Name #> Request Marshaller
+	/// </summary>       
+	public partial class <#=this.Operation.Name#>RequestMarshaller : IMarshaller<IRequest, <#=this.Operation.Name#>Request> , IMarshaller<IRequest,AmazonWebServiceRequest>
+	{
+        /// <summary>
+        /// Marshaller the request object to the HTTP request.
+        /// </summary>  
+        /// <param name="input"></param>
+        /// <returns></returns>
+		public IRequest Marshall(AmazonWebServiceRequest input)
+        {
+            return this.Marshall((<#=this.Operation.Name#>Request)input);
+        }
+
+        /// <summary>
+        /// Marshaller the request object to the HTTP request.
+        /// </summary>  
+        /// <param name="publicRequest"></param>
+        /// <returns></returns>
+		public IRequest Marshall(<#=this.Operation.Name #>Request publicRequest)
+		{
+			var request = new DefaultRequest(publicRequest, "<#=this.Config.Namespace#>");
+<#
+
+	if ((this.Config.ServiceModel.H2Support == H2SupportDegree.Optional && this.Operation.IsEventStreamBidi) || (this.Config.ServiceModel.H2Support == H2SupportDegree.EventStream && this.Operation.IsEventStreamOutput) || this.Config.ServiceModel.H2Support == H2SupportDegree.Required)
+	{
+#>
+#if NET8_0_OR_GREATER
+            request.HttpProtocolVersion = System.Net.HttpVersion.Version20;
+#endif
+<#
+	}
+
+	// Assign HttpMethod if present or default to POST
+	if(!string.IsNullOrWhiteSpace(this.Operation.HttpMethod)){		
+#>
+			request.HttpMethod = "<#=this.Operation.HttpMethod#>";
+<#
+	}
+	var requestStructure = this.Operation.RequestStructure;
+    var payload = this.Operation.RequestPayloadMember;
+
+	SetCompressionAlgorithmEncoding(this.Operation);
+
+    var shouldMarshallPayload = (payload != null && payload.IsStructure);
+
+    // This block adds members of the request object to the actual request
+	ProcessRequestUri(this.Operation);	
+	ProcessHeaderMembers("publicRequest", this.Operation.RequestHeaderMembers, requestStructure);		
+	ProcessUriMembers("publicRequest", this.Operation);	
+	ProcessQueryStringMembers("publicRequest", this.Operation);
+	if (this.Config.ServiceId == "S3")
+	{
+		// even though RequestUri contains the bucket name in s3. In reality, the bucket Name
+		// is part of the endpoint so we remove it.
+		string resourcePath = string.Empty;
+		if (this.Operation.RequestUri.StartsWith("/{Bucket}"))
+			resourcePath = this.Operation.RequestUri.Substring(9).Length == 0 ? "/" :  this.Operation.RequestUri.Substring(9);
+		else
+			resourcePath = this.Operation.RequestUri;
+#>
+			request.ResourcePath = "<#=resourcePath#>";
+<#
+	}
+	else
+	{
+#>
+			request.ResourcePath = "<#=this.Operation.RequestUri #>";
+
+<#   
+	}
+	// Process any members which are marshalled as part of the request body
+	if(this.Operation.RequestHasBodyMembers || shouldMarshallPayload)
+	{
+		ProcessRequestBodyMembers("publicRequest", this.Operation);
+	}
+	else if(payload != null && !payload.Shape.IsStructure)
+	{
+		ProcessNonStructurePayload(payload, 3);
+#>
+			PostMarshallCustomization(request, publicRequest);
+<#
+		GenerateRequestChecksumHandling(this.Operation, "content");
+	}
+	else
+	{
+#>
+
+			PostMarshallCustomization(request, publicRequest);
+<#
+	}
+	if (this.Operation.UnsignedPayload)
+	{
+#>
+			request.DisablePayloadSigning = true;
+<#	}
+
+	// If there aren't any members that are marshalled as part of the body or streamed	
+	if(this.Operation.UseQueryString)
+	{
+#>
+			request.UseQueryString = true;
+<#	}	
+
+	// We skip endpoint host prefix handling for S3 and S3 Control as it's implemented by endpoint rules.
+	if(!string.IsNullOrEmpty(this.Operation.EndpointHostPrefix) && this.Config.ServiceId != "S3" && this.Config.ServiceId != "S3 Control")
+	{
+		ProcessEndpointHostPrefixMembers(3, "publicRequest", this.Operation);
+	}
+#>
+			return request;
+		}
+<#				
+	this.AddRequestSingletonMethod();
+#>
+		partial void PostMarshallCustomization(DefaultRequest defaultRequest, <#=this.Operation.Name#>Request publicRequest);
+	}	
+}
+
+<#+
+
+	void ProcessRequestBodyMembers(string variableName, Operation operation)
+	{
+		bool requestPayloadMemberIsFlattened = false;
+		if (operation.RequestPayloadMember != null)
+			requestPayloadMemberIsFlattened = this.Config.ServiceModel.Customizations.FlattenShapes(operation.RequestStructure.Name).Contains(operation.RequestPayloadMember.ModeledName);
+		var level = 0;
+#>
+			var stringWriter = new XMLEncodedStringWriter(CultureInfo.InvariantCulture);
+			using (var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings() { Encoding = System.Text.Encoding.UTF8, OmitXmlDeclaration = true, NewLineHandling = NewLineHandling.Entitize }))
+			{   
+<#+
+		if(operation.RequestPayloadMember==null)
+		{
+			if(string.IsNullOrEmpty(operation.XmlNamespacePrefix))
+			{
+#>
+				xmlWriter.WriteStartElement("<#=operation.RequestStructure.MarshallName#>", "<#=operation.XmlNamespace#>");
+<#+
+			}
+			else
+			{
+#>
+				xmlWriter.WriteStartElement("<#=operation.RequestStructure.MarshallName#>");
+				xmlWriter.WriteAttributeString("xmlns", "<#=operation.XmlNamespacePrefix#>", null, "<#=operation.XmlNamespace#>");
+<#+
+			}
+			var requestStructureAttributes = operation.RequestStructure.Members.Where(x => x.IsXmlAttribute);
+			foreach(var member in requestStructureAttributes)
+			{
+#>
+				if(<#=variableName + ".IsSet" + member.PropertyName#>())
+<#+
+WriteXmlAttributeString(level, member, variableName, isPayload: false);
+#>
+<#+
+			}
+		}
+		else
+		{
+			if (!requestPayloadMemberIsFlattened)
+			{
+#>
+				if (<#=variableName + ".IsSet" + operation.RequestPayloadMember.PropertyName#>())
+				{
+<#+
+			}
+			if(string.IsNullOrEmpty(operation.XmlNamespace))
+			{
+#>
+					xmlWriter.WriteStartElement("<#=operation.RequestPayloadMember.LocationName != operation.RequestStructure.PayloadMemberName ? operation.RequestPayloadMember.LocationName : operation.RequestPayloadMember.Shape.MarshallName#>", "<#=operation.XmlNamespace#>");
+<#+
+			}
+			else
+			{
+				if(string.IsNullOrEmpty(operation.XmlNamespacePrefix))
+				{
+					// S3 doesn't follow the rule where if the request payload member's location name is the same as the payload member name, we marshall with the payload member's shape's marshall name instead
+					if (this.Config.ServiceId != "S3")
+					{
+#>
+					xmlWriter.WriteStartElement("<#=operation.RequestPayloadMember.LocationName != operation.RequestStructure.PayloadMemberName ? operation.RequestPayloadMember.LocationName : operation.RequestPayloadMember.Shape.MarshallName#>", "<#=operation.XmlNamespace#>");
+<#+
+					}
+					else
+					{
+#>
+					xmlWriter.WriteStartElement("<#=operation.RequestPayloadMember.LocationName#>", "<#=operation.XmlNamespace#>");
+<#+
+					}
+				}
+				else
+				{
+					if (this.Config.ServiceId != "S3")
+					{
+#>
+					xmlWriter.WriteStartElement("<#=operation.RequestPayloadMember.LocationName != operation.RequestStructure.PayloadMemberName ? operation.RequestPayloadMember.LocationName : operation.RequestPayloadMember.Shape.MarshallName#>");
+					xmlWriter.WriteAttributeString("xmlns","<#=operation.XmlNamespacePrefix#>",null,"<#=operation.XmlNamespace#>");
+<#+
+					}
+					else
+					{
+#>
+					xmlWriter.WriteStartElement("<#=operation.RequestPayloadMember.LocationName#>");
+					xmlWriter.WriteAttributeString("xmlns","<#=operation.XmlNamespacePrefix#>",null,"<#=operation.XmlNamespace#>");			
+<#+
+					}
+				}
+#>
+<#+
+			}
+			var requestPayloadAttributes = operation.RequestPayloadMember.Shape.Members.Where(x => x.IsXmlAttribute);
+			foreach(var member in requestPayloadAttributes)
+			{
+#>
+					if(<#=variableName + "." + operation.RequestPayloadMember.PropertyName + ".IsSet" + member.PropertyName#>())
+<#+
+WriteXmlAttributeString(level + 1, member, variableName, isPayload: true, operation);
+#>
+<#+
+			}
+			level++;
+		}
+		var childmembers = operation.RequestPayloadMember == null ? operation.RequestBodyMembers.Where(x => !x.IsXmlAttribute) : operation.RequestPayloadMember.Shape.Members.Where(x => !x.IsXmlAttribute);
+		variableName = (operation.RequestPayloadMember == null || requestPayloadMemberIsFlattened) ? variableName : variableName + "." + operation.RequestPayloadMember.PropertyName;
+		foreach(var member in childmembers)
+		{			
+			if(member.IsStructure)
+			{
+				ProcessStructure(level, variableName, member);				
+			}
+			else if(member.IsList)
+			{
+				ProcessList(level, variableName, member);
+			}
+			else if(member.IsMap)
+			{
+#>
+<#=new string(' ', (level + 4) * 4)#>if(<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#=new string(' ', (level + 4) * 4)#>{
+<#+
+				if(member.IsFlattened)
+				{
+					ProcessFlattenedMap(level,variableName,member);
+				}
+				else
+				{
+					ProcessMap(level, variableName, member);
+				}
+#>
+<#=new string(' ', (level + 4) * 4)#>}
+<#+
+			}
+			else
+			{
+#>
+<#=new string(' ', level * 4)#>				if(<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#+
+				if(string.IsNullOrEmpty(member.XmlNamespace))
+				{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteElementString("<#=member.MarshallName#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#><#=(member.IsNullable ? ".Value" : string.Empty)#>));
+<#+
+				}
+				else
+				{
+					string prefix = member.XmlNamespacePrefix != null ? $"{member.XmlNamespacePrefix}" : null;
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteElementString(<#=prefix#>,"<#=member.MarshallName#>","<#=member.XmlNamespace#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#><#=(member.IsNullable ? ".Value" : string.Empty)#>));
+<#+
+				}
+				if(member.IsIdempotent)
+				{
+#>
+				else				
+<#=new string(' ', level * 4)#>					xmlWriter.WriteElementString("<#=member.MarshallName#>", Guid.NewGuid().ToString());				
+<#+					
+				}
+#>
+<#=""#>
+<#+
+			}
+			
+		}  
+#>
+
+<#=new string(' ', level * 4)#>				xmlWriter.WriteEndElement();
+<#+
+		if(operation.RequestPayloadMember != null && !requestPayloadMemberIsFlattened)
+		{
+#>
+<#=new string(' ', level * 4)#>			}
+<#+
+			level--;
+		}
+#>
+			}
+			PostMarshallCustomization(request, publicRequest);
+			try 
+			{
+				string content = stringWriter.ToString();
+				request.Content = System.Text.Encoding.UTF8.GetBytes(content);
+				request.Headers["Content-Type"] = "application/xml";
+<#+
+					GenerateRequestChecksumHandling(operation, "content");
+#>
+	            request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "<#=this.Config.ServiceModel.APIVersion#>";            
+			} 
+			catch (EncoderFallbackException e) 
+			{
+				throw new AmazonServiceException("Unable to marshall request to XML", e);
+			}
+<#+				       
+	}
+
+	void ProcessMembers(int level, string variableName, IEnumerable<Member> members, bool insideMap = false)
+	{
+		// members that are XML Attributes MUST be written first. If not, it will be invalid XML. 
+		var sortedMembers = members.OrderByDescending(x => x.IsXmlAttribute);
+
+		foreach(var member in sortedMembers)
+		{
+			if (this.Config.ServiceModel.Customizations.TryGetVisitorPattern(member.Shape.Name, out var visitorPattern) && !visitorPattern.Visited)
+			{
+				WriteVisitorPattern(level, variableName, member);
+			}
+			else if(member.IsStructure)
+			{
+				ProcessStructure(level, variableName, member);
+			}
+			else if(member.IsList)
+			{
+				ProcessList(level, variableName, member);
+			}
+			else if(member.IsMap)
+			{
+#>
+<#=new string(' ', (level + 4) * 4)#>if (<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#=new string(' ', (level + 4) * 4)#>{
+<#+
+				if(member.IsFlattened)
+				{
+					ProcessFlattenedMap(level,variableName,member);
+				}
+				else
+				{
+					ProcessMap(level, variableName, member);
+				}
+#>
+<#=new string(' ', (level + 4) * 4)#>}
+<#+
+			}
+			// we're processing members of a structure as a map's value
+			else if(insideMap)
+			{
+#>
+<#=new string(' ', level * 4)#>				if(<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#=new string(' ', level * 4)#>					xmlWriter.WriteElementString("<#=member.ModeledName#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#><#=(member.IsNullable ? ".Value" : string.Empty)#>));
+<#+
+			}
+			else
+			{
+#>
+<#=new string(' ', level * 4)#>				if(<#=variableName#>.IsSet<#=member.PropertyName#>())
+<#+
+				if (!member.IsXmlAttribute)
+				{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteElementString("<#=member.MarshallName#>", <#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#><#=(member.IsNullable ? ".Value" : string.Empty)#>));
+<#+
+				}
+#>
+<#+
+				else
+				{
+					WriteXmlAttributeString(level, member, variableName, false);
+				}
+			}
+		}
+	}
+
+	void ProcessStructure(int level, string variableName, Shape shape)
+	{
+			// Use shape's ListMarshallName if the structure is a list.
+			var marshallName = shape.IsList ? shape.ListMarshallName ?? "member" : shape.MarshallName;
+#>				
+<#=new string(' ', level * 4)#>				if (<#=variableName#> != null) 
+<#=new string(' ', level * 4)#>				{
+<#+
+			if(string.IsNullOrEmpty(shape.XmlNamespace))
+			{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=marshallName#>");
+<#+			
+			}
+			else
+			{
+				if(string.IsNullOrEmpty(shape.XmlNamespacePrefix))
+				{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=marshallName#>", "<#=shape.XmlNamespace#>");
+<#+
+				}
+				else
+				{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=marshallName#>");
+<#=new string(' ', level * 4)#>					xmlWriter.WriteAttributeString("xmlns", "<#=marshallName#>",<#=shape.XmlNamespace#>, null );
+<#+
+				}
+			}
+			ProcessMembers(level + 1, variableName, shape.Members);			
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteEndElement();
+<#=new string(' ', level * 4)#>				}
+<#+		
+	}
+
+	void ProcessStructure(int level, string variableName, Member member)
+	{
+			var shape = member.Shape.IsList ?  member.Shape.ListShape : member.Shape ;
+			variableName = member.Shape.IsList ? variableName : variableName + "." + member.PropertyName;
+
+			// Use shape's ListMarshallName if the structure is a list.
+			var marshallName = member.Shape.IsList ? member.Shape.ListMarshallName ?? "member" : member.MarshallName;
+			if(member.Shape.IsFlattened || member.IsFlattened)
+				marshallName =  member.LocationName ?? member.ModeledName;
+#>
+<#=new string(' ', level * 4)#>				if (<#=variableName#> != null)
+<#=new string(' ', level * 4)#>				{
+<#+
+			if (!string.IsNullOrEmpty(member.Shape.XmlNamespace))
+			{
+				if (!string.IsNullOrEmpty(member.Shape.XmlNamespacePrefix))
+				{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.Shape.XmlNamespacePrefix#>","<#=marshallName#>","<#=member.Shape.XmlNamespace#>");
+<#+
+				}
+				else
+				{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=marshallName#>","<#=member.Shape.XmlNamespace#>");
+<#+
+				}
+			}
+			else
+			{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=marshallName#>");
+<#+
+			}
+			ProcessMembers(level + 1, variableName, shape.Members);
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteEndElement();
+<#=new string(' ', level * 4)#>				}
+<#+		
+	}
+	void ProcessList(int level, string variableName, Member member)
+	{
+				var listVariable = (variableName + member.PropertyName).Replace(".",string.Empty);
+				var listItemVariable = (variableName + member.PropertyName).Replace(".",string.Empty) + "Value";
+#>
+<#=new string(' ', level * 4)#>				var <#=listVariable#> = <#=variableName#>.<#=member.PropertyName#>;
+<#=new string(' ', level * 4)#>				if (<#=listVariable#> != null && (<#=listVariable#>.Count > 0 || !AWSConfigs.InitializeCollections)) 
+<#=new string(' ', level * 4)#>				{
+<#+
+				if (!member.IsFlattened && !member.Shape.IsFlattened)
+				{
+					if (string.IsNullOrEmpty(member.XmlNamespace))
+					{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.MarshallName#>");
+<#+
+					}
+					else
+					{
+						if (string.IsNullOrEmpty(member.XmlNamespacePrefix))
+						{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.MarshallName#>", "<#=member.XmlNamespace#>");
+<#+
+						}
+						else
+						{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.MarshallName#>");
+<#=new string(' ', level * 4)#>					xmlWriter.WriteAttributeString("xmlns","<#=member.XmlNamespacePrefix#>",null,"<#=member.XmlNamespace#>");
+<#+
+						}
+					}
+				}
+#>
+<#=new string(' ', level * 4)#>					foreach (var <#=listItemVariable#> in <#=listVariable#>) 
+<#=new string(' ', level * 4)#>					{
+<#+			
+			if(member.Shape.ListShape.IsStructure)
+			{
+					ProcessStructure(level + 1, listItemVariable, member);	
+			}
+			else
+			{
+				string listMarshallName = null;
+				if (this.Config.ServiceModel.Customizations.OverrideDataType(member.OwningShape.Name, member.ModeledName) != null)
+				{
+					var overrideDataType = this.Config.ServiceModel.Customizations.OverrideDataType(member.OwningShape.Name, member.ModeledName);
+					if (overrideDataType.DataType.Contains("List<") && overrideDataType.AlternateLocationName != null)
+						listMarshallName = overrideDataType.AlternateLocationName;
+				}
+				else
+					listMarshallName = member.Shape.ListMarshallName ?? "member";
+				// see https://smithy.io/2.0/spec/protocol-traits.html#xmlflattened-trait
+				if(member.IsFlattened || member.Shape.IsFlattened)
+					listMarshallName = member.LocationName ?? member.ModeledName;
+				if(member.Shape.ListShape.IsTimeStamp)
+				{
+					// Use shape's ListMarshallName as it's a list structure.
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=listMarshallName#>");
+<#=new string(' ', level * 4)#>						xmlWriter.WriteValue(<#=member.Shape.ListShape.PrimitiveMarshaller(MarshallLocation.Body)#>(<#=listItemVariable#>));
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#+				
+
+				}
+				else
+				{
+					var listNode = member.Shape.data;
+					var listMemberNode = listNode[Shape.MemberKey];
+					Member innerShape = null;
+					if(this.Structure != null)
+						innerShape = new Member(this.Structure.model, member.Shape, listMemberNode["shape"].ToString(), listMarshallName, listMemberNode, null);
+					
+					// Use shape's ListMarshallName as it's a list structure.
+					if(listMemberNode == null || listMemberNode[ServiceModel.XmlNamespaceKey] == null || string.IsNullOrEmpty((string)listMemberNode[ServiceModel.XmlNamespaceKey]))
+					{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=listMarshallName#>");
+<#+
+					}
+					else
+					{
+						JsonData listMemberXmlNamespaceNode = listMemberNode[ServiceModel.XmlNamespaceKey];
+						// if it's a string, it has no prefix
+						if(listMemberXmlNamespaceNode.IsString)
+						{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=listMarshallName#>", "<#=listMemberXmlNamespaceNode#>");
+
+<#+
+						}
+						else
+						{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=listMarshallName#>");
+<#=new string(' ', level * 4)#>						xmlWriter.WriteAttributeString("xmlns","<#=listMemberXmlNamespaceNode[ServiceModel.XmlNamespacePrefixKey]#>",null,"<#=listMemberXmlNamespaceNode[ServiceModel.XmlNamespaceUriKey]#>");
+<#+
+						}
+					}
+					if (innerShape != null && innerShape.Shape.IsList)
+					{
+						ProcessNestedList(level + 1, variableName, innerShape, member);
+					}
+#>
+<#+
+					if (innerShape == null || (innerShape != null && !innerShape.Shape.IsList))
+					{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteValue(<#=listItemVariable#>);
+<#+
+					}
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#+				
+				}
+			}			
+#>
+<#=new string(' ', level * 4)#>					}			
+<#+
+			if (!member.IsFlattened && !member.Shape.IsFlattened)
+			{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteEndElement();			
+<#+
+			}
+#>
+<#=new string(' ', level * 4)#>				}
+<#+				
+	}
+
+	void ProcessMap(int level, string variableName, Member member)
+	{
+		if(string.IsNullOrEmpty(member.XmlNamespace))
+		{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.MarshallName#>");
+<#+
+		}
+		else
+		{
+			if(string.IsNullOrEmpty(member.XmlNamespacePrefix))
+			{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.MarshallName#>","<#=member.XmlNamespace#>");
+
+<#+
+			}
+			else
+			{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("<#=member.MarshallName#>");
+<#=new string(' ', level * 4)#>					xmlWriter.WriteAttributeString("xmlns","<#=member.XmlNamespacePrefix#>",null,"<#=member.XmlNamespace#>");
+<#+
+			}
+		}
+#>
+<#=new string(' ', level * 4)#>					foreach (var kvp in <#=variableName#>.<#=member.PropertyName#>)
+<#=new string(' ', level * 4)#>					{
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("entry");
+<#+
+		if(string.IsNullOrEmpty(member.Shape.KeyShapeXmlNamespace))
+		{
+#>
+
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.KeyMarshallName#>", kvp.Key);
+<#+
+		}
+		else
+		{
+			var keyNode = member.Shape.data[Shape.KeyKey];
+			if(keyNode[ServiceModel.XmlNamespaceKey].IsString)
+			{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.KeyMarshallName#>","<#=member.Shape.KeyShapeXmlNamespace#>",kvp.Key);
+<#+
+			}
+			else
+			{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=keyNode[ServiceModel.XmlNamespaceKey][ServiceModel.XmlNamespacePrefixKey]#>","<#=member.Shape.KeyMarshallName#>","<#=member.Shape.KeyShapeXmlNamespace#>",kvp.Key);
+
+<#+
+			}
+		}
+		if(member.Shape.ValueShape.IsMap)
+		{
+			ProcessSubMap(level + 1, member.Shape.ValueShape, "kvp");
+		}
+		else if(member.Shape.ValueShape.IsStructure)
+		{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=member.Shape.ValueMarshallName#>");
+<#+
+			ProcessStructureAsMapValue(level + 2, "kvp.Value", member.Shape.ValueShape);
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#+
+		}
+		else
+		{
+			if(string.IsNullOrEmpty(member.Shape.ValueShapeXmlNamespace))
+			{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.ValueMarshallName#>", kvp.Value<#=member.Shape.ValueShape.IsString ? "" : ".ToString()"#>);
+<#+
+			}
+			else
+			{
+				var valueNode = member.Shape.data[Shape.ValueKey];
+				if(valueNode[ServiceModel.XmlNamespaceKey].IsString)
+				{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.ValueMarshallName#>", "<#=member.Shape.ValueShapeXmlNamespace#>",kvp.Value<#=member.Shape.ValueShape.IsString ? "" : ".ToString()"#>);
+<#+				}
+				else
+				{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=valueNode[ServiceModel.XmlNamespaceKey][ServiceModel.XmlNamespacePrefixKey]#>","<#=member.Shape.ValueMarshallName#>", "<#=member.Shape.ValueShapeXmlNamespace#>",kvp.Value<#=member.Shape.ValueShape.IsString ? "" : ".ToString()"#>);
+<#+
+				}
+			}
+		}
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#=new string(' ', level * 4)#>					}
+<#=new string(' ', level * 4)#>					xmlWriter.WriteEndElement();
+<#+		
+	}
+#>
+<#+
+	// Separating the processing of a flattened map and a regular map for maintability
+	void ProcessFlattenedMap(int level, string variableName, Member member)
+	{	
+#>
+<#=new string(' ', level * 4)#>					foreach (var kvp in <#=variableName#>.<#=member.PropertyName#>)
+<#=new string(' ', level * 4)#>					{
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=member.MarshallName#>");
+<#+
+		if(string.IsNullOrEmpty(member.Shape.KeyShapeXmlNamespace))
+		{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.KeyMarshallName#>", kvp.Key);
+<#+
+		}
+		else
+		{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.KeyMarshallName#>","<#=member.Shape.KeyShapeXmlNamespace#>", kvp.Key);
+<#+
+		}
+		if(member.Shape.ValueShape.IsMap)
+		{
+			ProcessSubMap(level + 1, member.Shape.ValueShape, "kvp");
+		}
+		else if(member.Shape.ValueShape.IsStructure)
+		{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=member.Shape.ValueMarshallName#>");
+<#+
+			ProcessStructureAsMapValue(level + 2, "kvp.Value", member.Shape.ValueShape);
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#+
+		}
+		else
+		{
+			if(string.IsNullOrEmpty(member.Shape.ValueShapeXmlNamespace))
+			{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.ValueMarshallName#>", kvp.Value<#=member.Shape.ValueShape.IsString ? "" : ".ToString()"#>);
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#+
+			}
+			else
+			{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=member.Shape.ValueMarshallName#>", "<#=member.Shape.ValueShapeXmlNamespace#>", kvp.Value<#=member.Shape.ValueShape.IsString ? "" : ".ToString()"#>);
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#+
+			}
+		}
+#>
+<#=new string(' ', level * 4)#>					}	
+<#+
+	}
+#>
+<#+
+	void ProcessSubMap(int level, Shape shape, string parentVariableName)
+	{				
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteStartElement("value");
+<#=new string(' ', level * 4)#>					foreach (var kvp<#=level#> in <#=parentVariableName#>.Value) 
+<#=new string(' ', level * 4)#>					{
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("entry");
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=shape.KeyMarshallName#>", kvp<#=level#>.Key);
+<#+
+		if(shape.ValueShape.IsMap)
+		{
+			ProcessSubMap(level + 1, shape.ValueShape, $"kvp{level}");
+		}
+		else
+		{
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteElementString("<#=shape.ValueMarshallName#>", kvp<#=level#>.Value);
+<#+
+		}
+#>
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#=new string(' ', level * 4)#>					}			
+<#=new string(' ', level * 4)#>					xmlWriter.WriteEndElement();				
+<#+				
+	}
+#>
+<#+
+	protected void ProcessNonStructurePayload(Member payload, int level)
+	{
+		if(payload.Shape.IsString)
+		{
+#>
+<#=new string(' ', level * 4)#>request.Content = Encoding.UTF8.GetBytes(<#=this.Operation.RequestPayloadMember.PrimitiveMarshaller#>(publicRequest.<#=this.Operation.RequestPayloadMember.PropertyName#>));
+<#=new string(' ', level * 4)#>request.Headers["Content-Type"] = "text/plain";
+<#+
+		}
+		else if(payload.Shape.IsMemoryStream)
+		{
+#>
+<#=new string(' ', level * 4)#>request.ContentStream = publicRequest.<#=this.Operation.RequestPayloadMember.PropertyName#>;
+<#=new string(' ', level * 4)#>request.Headers["Content-Type"] = "application/octet-stream";
+<#+
+		}
+	}
+#>
+<#+
+	protected void ProcessStructureAsMapValue(int level, string variableName, Shape shape)
+	{
+		// Use shape's ListMarshallName if the structure is a list.
+#>
+<#=new string(' ', level * 4)#>				if (<#=variableName#> != null) 
+<#=new string(' ', level * 4)#>				{
+<#+
+			ProcessMembers(level + 1, variableName, shape.Members, insideMap: true);
+#>
+<#=new string(' ', level * 4)#>				}
+<#+
+	}
+#>
+<#+
+	protected void ProcessNestedList(int level, string variableName, Member innerMember, Member owningMember)
+	{
+		// ListItemVariable corresponds to the innerList, which is named via the owningMember. 
+		// The innerMember is only used if the list has another layer of nesting
+		var listVariable = (variableName + owningMember.PropertyName).Replace(".",string.Empty);
+		var listItemVariable = (variableName + owningMember.PropertyName).Replace(".",string.Empty) + "Value";
+		var listMarshallName = innerMember.Shape.ListMarshallName ?? "member";
+		var innerListItemVariable = listItemVariable + "InnerValue";
+		var listNode = innerMember.Shape.data;
+		var listMemberNode = listNode[Shape.MemberKey];
+		var innerShape = new Member(this.Structure.model, innerMember.Shape, listMemberNode["shape"].ToString(), listMarshallName, listMemberNode, null);
+		
+
+#>
+<#=new string(' ', (level) * 4)#>					foreach (var <#=innerListItemVariable#> in <#=listItemVariable#>)
+<#=new string(' ', (level) * 4)#>					{
+<#=new string(' ', (level) * 4)#>						xmlWriter.WriteStartElement("<#=listMarshallName#>");
+<#=new string(' ', (level) * 4)#>						xmlWriter.WriteValue(<#=innerListItemVariable#>);
+<#=new string(' ', (level) * 4)#>						xmlWriter.WriteEndElement();
+<#+
+		if (innerShape != null && innerShape.Shape.IsList)
+		{
+			ProcessNestedList(level + 1, variableName, innerShape, innerMember);
+		}
+#>
+<#=new string(' ', (level) * 4)#>					}
+<#+
+	}
+#>
+<#+
+	// xsi is a common prefix in attributes, but it cannot be included in the local name itself as the xmlWriter class will throw an exception. 
+	// Some services may model the xmlName, with the xsi prefix included like it is here https://github.com/smithy-lang/smithy/blob/7813acbfee4e90b589996ffcfa02fbe73785f654/smithy-aws-protocol-tests/model/restXmlWithNamespace/main.smithy#L147
+	// In this case, we add xsi to the prefix argument of WriteAttributeString and extract the local name.
+	protected void WriteXmlAttributeString(int level, Member member, string variableName,  bool isPayload, Operation operation = null)
+	{
+		var prefix = "";
+		var localName = "";
+		string ns = string.IsNullOrEmpty(member.XmlNamespace) ? member.Shape.XmlNamespace : member.XmlNamespace;
+		// in the rare case like "Type" on "Grantee" in s3, the member or the member's shape doesn't have an xmlNamespace attached
+		// but instead it uses the xmlNamespace on the owning shape. If ns is still null at this point, we use the owning shape's xml namespace
+		if (string.IsNullOrEmpty(ns))
+			ns = member.OwningShape.XmlNamespace;
+		if (member.MarshallName.Contains(":"))
+		{
+			var colonIndex = member.MarshallName.IndexOf(":");
+			prefix = member.MarshallName.Substring(0, colonIndex);
+			localName = member.MarshallName.Substring(colonIndex + 1);
+		}
+		else
+		{
+			prefix = member.XmlNamespacePrefix;
+			localName = member.MarshallName;
+		}		
+#>
+<#+
+		if(isPayload)
+		{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteAttributeString("<#=prefix#>","<#=localName#>","<#=ns#>",<#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=operation.RequestPayloadMember.PropertyName#>.<#=member.PropertyName#>));
+<#+
+		}
+		else
+		{
+#>
+<#=new string(' ', level * 4)#>					xmlWriter.WriteAttributeString("<#=prefix#>","<#=localName#>", "<#=ns#>",<#=member.PrimitiveMarshaller#>(<#=variableName#>.<#=member.PropertyName#>));
+<#+
+		}
+	}
+#>
+<#+
+	protected void WriteVisitorPattern(int level, string variableName, Member member)
+	{
+		var visitorPattern = this.Config.ServiceModel.Customizations.GetVisitorPattern(member.Shape.Name);
+		visitorPattern.Visited = true;
+#>
+<#=new string(' ', level * 4)#>				if (<#=variableName#>.<#=member.ModeledName#> != null)
+<#=new string(' ', level * 4)#>				{
+<#=new string(' ', level * 4)#>					if (<#=variableName#>.<#=member.ModeledName#>.<#=visitorPattern.PredicateName#> != null)
+<#=new string(' ', level * 4)#>					{
+<#=new string(' ', level * 4)#>						xmlWriter.WriteStartElement("<#=member.MarshallName#>");
+<#=new string(' ', level * 4)#>						<#=variableName#>.<#=member.ModeledName#>.<#=visitorPattern.PredicateName#>.Accept(new <#=visitorPattern.VisitorName#>(<#=visitorPattern.VisitorParam#>));
+<#=new string(' ', level * 4)#>						xmlWriter.WriteEndElement();
+<#=new string(' ', level * 4)#>					}
+<#=new string(' ', level * 4)#>					else
+<#=new string(' ', level * 4)#>					{
+<#+
+												ProcessStructure(level+=2, variableName, member);
+#>
+<#=new string(' ' , level * 4)#>					}
+
+<#=new string(' ', level * 4)#>				}
+<#+
+	}
+#>

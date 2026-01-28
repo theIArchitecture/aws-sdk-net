@@ -1,0 +1,35 @@
+# Layer Violation Detection Rule
+# Detects violations of architectural layer boundaries (e.g., Repository depending on Service)
+# Enforces clean architecture principles
+
+RULE "LAYER-VIOLATION-DETECTION" : IMetaArchitecture
+  ID: "ARCH-LAYER-001"
+  DESCRIPTION: "Layer violation detected - dependencies flow in the wrong direction, violating architectural boundaries"
+  SEVERITY: Fatal
+  CATEGORY: "Architecture_Quality"
+  APPLIES_TO: ["csharp", "java", "python", "typescript", "javascript"]
+
+  PLUGIN:
+    ID: "architecture-validator"
+    SCOPE: "tree"
+    CONFIG:
+      validator: "LayerViolation"
+      hierarchy: "CleanArchitecture"
+
+  EDUCATION:
+    DOCS_URL: "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html"
+    WHY_IT_MATTERS: "Layer violations break the dependency rule: dependencies should only point inward. Outer layers (UI, API) can depend on inner layers (Domain), but not vice versa."
+    BUSINESS_IMPACT: "Violated layer boundaries create architectural drift, making the codebase fragile and difficult to evolve. Changes cascade unpredictably across layers."
+    QUICK_FIX: "Reverse the dependency using dependency inversion principle - create an interface in the inner layer and implement it in the outer layer"
+
+  ARCHITECTURAL_CONTEXT:
+    PROJECT_TYPE: "SDK"
+    ARCHITECTURE_PATTERN: "Service_Oriented"
+    DESIGN_PRINCIPLES: ["Service_Independence", "Client_Abstraction", "Internal_Encapsulation"]
+
+  VIOLATIONS:
+    - "Layer violation: {{SOURCE_LAYER}} should not depend on {{TARGET_LAYER}}"
+    - "Dependency inversion required: {{SOURCE_LAYER}} → {{TARGET_LAYER}} violates the dependency rule"
+    - "Architectural boundary breach: Inner layer depends on outer layer"
+
+END_RULE

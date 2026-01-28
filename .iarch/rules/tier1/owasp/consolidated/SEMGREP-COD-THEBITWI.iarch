@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-COD-THEBITWI
+# Group: the-bitwise-operator
+# Merged from 2 individual language-specific rules
+# Languages: elixir
+
+RULE "The bitwise operator (`^^^`) is already deprecated. Please use `Bitwise.bxor($LEFT, $RIGHT)` instead." : IValidationArchitecture
+  ID: "SEMGREP-COD-THEBITWI"
+  DESCRIPTION: "The bitwise operator (`^^^`) is already deprecated. Please use `Bitwise.bxor($LEFT, $RIGHT)` instead."
+  SEVERITY: Warning
+  CATEGORY: "CodeQuality"
+  APPLIES_TO: ["elixir"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "CodeQuality"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"elixir\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"~~~$VAL\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$LEFT ^^^ $RIGHT\"}]}"
+
+  VIOLATIONS:
+    - "The bitwise operator (`^^^`) is already deprecated. Please use `Bitwise.bxor($LEFT, $RIGHT)` instead."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "The bitwise operator (`^^^`) is already deprecated. Please use `Bitwise.bxor($LEFT, $RIGHT)` instead. This can lead to security vulnerabilities. (the bitwise operator)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://github.com/elixir-lang/elixir/commit/c9a171da5b25e0eb5d1da3b04c622f8b79a8aff4"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 2
+    SOURCE_GROUP: "the-bitwise-operator"
+
+END RULE

@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-SQLINJEC
+# Group: sql-injection
+# Merged from 1 individual language-specific rules
+# Languages: python
+
+RULE "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option." : IValidationArchitecture
+  ID: "SEMGREP-SEC-SQLINJEC"
+  DESCRIPTION: "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option."
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["python"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"python\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute( $SQL \\u002B ..., ... )\\n\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute( $SQL % (...), ...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute( $SQL.format(...), ... )\\n\"},{\"Name\":\"SEMGREP_PATTERN_4\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute(f\\u0022...{...}...\\u0022, ...)\\n\"},{\"Name\":\"SEMGREP_PATTERN_5\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_5_AND_0\",\"Type\":1,\"Pattern\":\"$QUERY = $SQL \\u002B ...\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_5_AND_1\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute($QUERY, ...)\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_6\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_6_AND_0\",\"Type\":1,\"Pattern\":\"$QUERY = $SQL % (...)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_6_AND_1\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute($QUERY, ...)\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_7\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_7_AND_0\",\"Type\":1,\"Pattern\":\"$QUERY = $SQL.format(...)\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_7_AND_1\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute($QUERY, ...)\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_8\",\"Type\":3,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_8_AND_0\",\"Type\":1,\"Pattern\":\"$QUERY = f\\u0022...{...}...\\u0022\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_8_AND_1\",\"Type\":0,\"Pattern\":\"$CONNECTION.execute($QUERY, ...)\\n\"}]}]}"
+
+  VIOLATIONS:
+    - "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option. This can lead to security vulnerabilities. (sql injection)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-textual-sql"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "sql-injection"
+
+END RULE

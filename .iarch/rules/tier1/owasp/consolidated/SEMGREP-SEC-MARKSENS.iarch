@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-MARKSENS
+# Group: mark-sensitive-parameters
+# Merged from 1 individual language-specific rules
+# Languages: generic
+
+RULE "Mark sensitive parameters with the @secure() decorator. This avoids logging the value or displaying it in the Azure portal, Azure CLI, or Azure PowerShell." : IValidationArchitecture
+  ID: "SEMGREP-SEC-MARKSENS"
+  DESCRIPTION: "Mark sensitive parameters with the @secure() decorator. This avoids logging the value or displaying it in the Azure portal, Azure CLI, or Azure PowerShell."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["generic"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"generic\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"param $NAME string\"}]}"
+
+  VIOLATIONS:
+    - "Mark sensitive parameters with the @secure() decorator. This avoids logging the value or displaying it in the Azure portal, Azure CLI, or Azure PowerShell."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Mark sensitive parameters with the @secure() decorator. This avoids logging the value or displaying it in the Azure portal, Azure CLI, or Azure PowerShell. This can lead to security vulnerabilities. (mark sensitive parameters)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://cwe.mitre.org/data/definitions/532.html"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "mark-sensitive-parameters"
+
+END RULE

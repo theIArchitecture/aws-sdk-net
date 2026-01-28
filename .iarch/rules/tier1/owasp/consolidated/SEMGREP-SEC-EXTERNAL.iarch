@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-EXTERNAL
+# Group: external-entities-are
+# Merged from 1 individual language-specific rules
+# Languages: java
+
+RULE "External entities are allowed for $DBFACTORY. This is vulnerable to XML external entity attacks. Disable this by setting the feature \"http://xml.org/sax/features/external-general-entities\" to false." : IValidationArchitecture
+  ID: "SEMGREP-SEC-EXTERNAL"
+  DESCRIPTION: "External entities are allowed for $DBFACTORY. This is vulnerable to XML external entity attacks. Disable this by setting the feature \"http://xml.org/sax/features/external-general-entities\" to false."
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["java"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"$DBFACTORY.setFeature(\\u0022http://xml.org/sax/features/external-general-entities\\u0022, true);\"}]}"
+
+  VIOLATIONS:
+    - "External entities are allowed for $DBFACTORY. This is vulnerable to XML external entity attacks. Disable this by setting the feature \"http://xml.org/sax/features/external-general-entities\" to false."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "External entities are allowed for $DBFACTORY. This is vulnerable to XML external entity attacks. Disable this by setting the feature \"http://xml.org/sax/features/external-general-entities\" to false. This can lead to security vulnerabilities. (external entities are)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://semgrep.dev/blog/2022/xml-security-in-java"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "external-entities-are"
+
+END RULE

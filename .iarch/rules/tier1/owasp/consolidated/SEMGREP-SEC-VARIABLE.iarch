@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-VARIABLE
+# Group: variable-'$var'-was
+# Merged from 1 individual language-specific rules
+# Languages: c
+
+RULE "Variable '$VAR' was passed to a function after being freed. This can lead to undefined behavior." : IValidationArchitecture
+  ID: "SEMGREP-SEC-VARIABLE"
+  DESCRIPTION: "Variable '$VAR' was passed to a function after being freed. This can lead to undefined behavior."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["c"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"c\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$FUNC(..., \\u003C... $VAR ...\\u003E, ...)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$FUNC(..., \\u003C... $VAR-\\u003E$ACCESSOR ...\\u003E, ...)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_2\",\"Type\":0,\"Pattern\":\"$FUNC(..., \\u003C... (*$VAR).$ACCESSOR ...\\u003E, ...)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_3\",\"Type\":0,\"Pattern\":\"$FUNC(..., \\u003C... $VAR[$NUM] ...\\u003E, ...)\"}]},{\"Name\":\"SEMGREP_PATTERN_3\",\"Type\":1,\"Pattern\":\"free($VAR); ...\"}]}"
+
+  VIOLATIONS:
+    - "Variable '$VAR' was passed to a function after being freed. This can lead to undefined behavior."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Variable '$VAR' was passed to a function after being freed. This can lead to undefined behavior. This can lead to security vulnerabilities. (variable '$var' was)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://cwe.mitre.org/data/definitions/416.html"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "variable-'$var'-was"
+
+END RULE

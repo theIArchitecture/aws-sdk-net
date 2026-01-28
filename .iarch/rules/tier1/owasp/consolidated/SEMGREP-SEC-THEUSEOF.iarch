@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-THEUSEOF
+# Group: the-use-of
+# Merged from 4 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "The use of $sce.trustAsHtml can be dangerous if unsanitized user input flows through this API." : IValidationArchitecture
+  ID: "SEMGREP-SEC-THEUSEOF"
+  DESCRIPTION: "The use of $sce.trustAsHtml can be dangerous if unsanitized user input flows through this API."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$SOURCE = $scope.$INPUT;\\n$sce.trustAsCss($SOURCE);\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$sce.trustAsCss($scope.$INPUT);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce){\\n...\\n});\\n\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$SOURCE = $scope.$INPUT;\\n$sce.trustAsHtml($SOURCE);\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$sce.trustAsHtml($scope.$INPUT);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce){\\n...\\n});\\n\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$SOURCE = $scope.$INPUT;\\n$sce.trustAsJs($SOURCE);\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$sce.trustAsJs($scope.$INPUT);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce){\\n...\\n});\\n\"},{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce) {\\n...\\n});\\n\"},{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":0,\"Pattern\":\"$scope.$X\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":0,\"Pattern\":\"$sce.trustAs(...)\"}]},{\"Name\":\"TAINT_SINK_3\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_3\",\"Type\":0,\"Pattern\":\"$sce.trustAsHtml(...)\"}]}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$SOURCE = $scope.$INPUT;\\n$sce.trustAsCss($SOURCE);\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$sce.trustAsCss($scope.$INPUT);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce){\\n...\\n});\\n\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$SOURCE = $scope.$INPUT;\\n$sce.trustAsHtml($SOURCE);\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$sce.trustAsHtml($scope.$INPUT);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce){\\n...\\n});\\n\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$SOURCE = $scope.$INPUT;\\n$sce.trustAsJs($SOURCE);\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$sce.trustAsJs($scope.$INPUT);\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce){\\n...\\n});\\n\"},{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":1,\"Pattern\":\"app.controller(..., function($scope,$sce) {\\n...\\n});\\n\"},{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":0,\"Pattern\":\"$scope.$X\"}]}]},{\"Name\":\"TAINT_SINK_2\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_2\",\"Type\":0,\"Pattern\":\"$sce.trustAs(...)\"}]},{\"Name\":\"TAINT_SINK_3\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_3\",\"Type\":0,\"Pattern\":\"$sce.trustAsHtml(...)\"}]}]}"
+
+  VIOLATIONS:
+    - "The use of $sce.trustAsHtml can be dangerous if unsanitized user input flows through this API."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "The use of $sce.trustAsHtml can be dangerous if unsanitized user input flows through this API. This can lead to security vulnerabilities. (the use of)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://docs.angularjs.org/api/ng/service/$sce#trustAsHtml"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 4
+    SOURCE_GROUP: "the-use-of"
+
+END RULE

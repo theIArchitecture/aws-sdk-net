@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-CRYPTOGR
+# Group: cryptographic-algorithms-are
+# Merged from 1 individual language-specific rules
+# Languages: java
+
+RULE "Cryptographic algorithms are notoriously difficult to get right. By implementing a custom message digest, you risk introducing security issues into your program. Use one of the many sound message digests already available to you: MessageDigest sha256Digest = MessageDigest.getInstance(\"SHA256\");" : IValidationArchitecture
+  ID: "SEMGREP-SEC-CRYPTOGR"
+  DESCRIPTION: "Cryptographic algorithms are notoriously difficult to get right. By implementing a custom message digest, you risk introducing security issues into your program. Use one of the many sound message digests already available to you: MessageDigest sha256Digest = MessageDigest.getInstance(\"SHA256\");"
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["java"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"java\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"class $CLASS extends MessageDigest {\\n  ...\\n}\"}]}"
+
+  VIOLATIONS:
+    - "Cryptographic algorithms are notoriously difficult to get right. By implementing a custom message digest, you risk introducing security issues into your program. Use one of the many sound message digests already available to you: MessageDigest sha256Digest = MessageDigest.getInstance(\"SHA256\");"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Cryptographic algorithms are notoriously difficult to get right. By implementing a custom message digest, you risk introducing security issues into your program. Use one of the many sound message digests already available to you: MessageDigest sha256Digest = MessageDigest.getInstance(\"SHA256\"); This can lead to security vulnerabilities. (cryptographic algorithms are)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html#custom-algorithms"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "cryptographic-algorithms-are"
+
+END RULE

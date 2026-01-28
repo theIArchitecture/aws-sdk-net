@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-DEPENDIN
+# Group: depending-on-the
+# Merged from 1 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "Depending on the context, user control data in `Object.assign` can cause web response to include data that it should not have or can lead to a mass assignment vulnerability." : IValidationArchitecture
+  ID: "SEMGREP-SEC-DEPENDIN"
+  DESCRIPTION: "Depending on the context, user control data in `Object.assign` can cause web response to include data that it should not have or can lead to a mass assignment vulnerability."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES, $NEXT) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES) {...})\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES, $NEXT) {...})\"}]}]}]},{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_0\",\"Type\":0,\"Pattern\":\"$REQ.query\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_1\",\"Type\":0,\"Pattern\":\"$REQ.body\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_2\",\"Type\":0,\"Pattern\":\"$REQ.params\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_3\",\"Type\":0,\"Pattern\":\"$REQ.cookies\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_4\",\"Type\":0,\"Pattern\":\"$REQ.headers\"}]}]}]},{\"Name\":\"TAINT_SOURCE_2\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response, $NEXT: NextFunction) =\\u003E\\n{...}\\n\"},{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response) =\\u003E {...}\\n\"}]},{\"Name\":\"TAINT_SOURCE_2_AND_2\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_0\",\"Type\":0,\"Pattern\":\"params\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_1\",\"Type\":0,\"Pattern\":\"query\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_2\",\"Type\":0,\"Pattern\":\"cookies\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_3\",\"Type\":0,\"Pattern\":\"headers\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_4\",\"Type\":0,\"Pattern\":\"body\"}]}]}]},{\"Name\":\"TAINT_SINK_3\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_3\",\"Type\":0,\"Pattern\":\"Object.assign(...)\"}]}],\"typescript\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_1\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"function ... ($REQ, $RES, $NEXT) {...}\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES) {...})\"},{\"Name\":\"TAINT_SOURCE_1_AND_0_OR_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"$APP.$METHOD(..., function $FUNC($REQ, $RES, $NEXT) {...})\"}]}]}]},{\"Name\":\"TAINT_SOURCE_1_AND_1\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_0\",\"Type\":0,\"Pattern\":\"$REQ.query\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_1\",\"Type\":0,\"Pattern\":\"$REQ.body\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_2\",\"Type\":0,\"Pattern\":\"$REQ.params\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_3\",\"Type\":0,\"Pattern\":\"$REQ.cookies\"},{\"Name\":\"TAINT_SOURCE_1_AND_1_OR_4\",\"Type\":0,\"Pattern\":\"$REQ.headers\"}]}]}]},{\"Name\":\"TAINT_SOURCE_2\",\"Type\":4,\"Children\":[{\"Name\":\"TAINT_SOURCE_2\",\"Type\":3,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_0\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response, $NEXT: NextFunction) =\\u003E\\n{...}\\n\"},{\"Name\":\"TAINT_SOURCE_2_AND_0_OR_1\",\"Type\":1,\"Pattern\":\"({ $REQ }: Request,$RES: Response) =\\u003E {...}\\n\"}]},{\"Name\":\"TAINT_SOURCE_2_AND_2\",\"Type\":2,\"Children\":[{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_0\",\"Type\":0,\"Pattern\":\"params\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_1\",\"Type\":0,\"Pattern\":\"query\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_2\",\"Type\":0,\"Pattern\":\"cookies\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_3\",\"Type\":0,\"Pattern\":\"headers\"},{\"Name\":\"TAINT_SOURCE_2_AND_2_OR_4\",\"Type\":0,\"Pattern\":\"body\"}]}]}]},{\"Name\":\"TAINT_SINK_3\",\"Type\":5,\"Children\":[{\"Name\":\"TAINT_SINK_3\",\"Type\":0,\"Pattern\":\"Object.assign(...)\"}]}]}"
+
+  VIOLATIONS:
+    - "Depending on the context, user control data in `Object.assign` can cause web response to include data that it should not have or can lead to a mass assignment vulnerability."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Depending on the context, user control data in `Object.assign` can cause web response to include data that it should not have or can lead to a mass assignment vulnerability. This can lead to security vulnerabilities. (depending on the)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://en.wikipedia.org/wiki/Mass_assignment_vulnerability"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "depending-on-the"
+
+END RULE

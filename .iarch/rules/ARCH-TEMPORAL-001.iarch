@@ -1,0 +1,36 @@
+# Temporal Coupling Detection Rule
+# Finds methods that are always called together (refactoring opportunity)
+# Identifies patterns where methods should be combined or use Facade pattern
+
+RULE "TEMPORAL-COUPLING-DETECTION" : IMetaArchitecture
+  ID: "ARCH-TEMPORAL-001"
+  DESCRIPTION: "Methods are called together frequently - temporal coupling detected (refactoring opportunity)"
+  SEVERITY: Info
+  CATEGORY: "Architecture_Quality"
+  APPLIES_TO: ["csharp", "java", "python", "typescript", "javascript"]
+
+  PLUGIN:
+    ID: "architecture-validator"
+    SCOPE: "tree"
+    CONFIG:
+      validator: "TemporalCoupling"
+      coupling_threshold: "0.9"
+      min_occurrences: "5"
+
+  EDUCATION:
+    DOCS_URL: "https://en.wikipedia.org/wiki/Coupling_(computer_programming)#Temporal_coupling"
+    WHY_IT_MATTERS: "This rule helps prevent temporal coupling, which can make code harder to test, maintain, and evolve over time. By breaking up methods that are tightly coupled in terms of both invocation and execution order, you can create more modular, flexible, and maintainable code. This is particularly important when working on legacy codebases or projects with multiple stakeholders, as it can help reduce the risk of introducing unintended side effects or making breaking changes to existing functionality"
+    BUSINESS_IMPACT: "Violating this rule can result in increased costs due to repeated method calls, which can lead to a decrease in productivity and overall efficiency of the system. Additionally, it may also lead to an increase in technical debt, which can negatively impact the long-term maintainability and scalability of the system"
+    QUICK_FIX: "Refactor the coupled methods into a single method that performs both operations. Alternatively, use the Facade pattern to create a higher-level method that encapsulates the sequence. If the methods must remain separate, document the coupling clearly and consider using a builder pattern or transaction pattern to enforce the correct sequence."
+
+  ARCHITECTURAL_CONTEXT:
+    PROJECT_TYPE: "SDK"
+    ARCHITECTURE_PATTERN: "Service_Oriented"
+    DESIGN_PRINCIPLES: ["Low_Coupling", "Service_Independence", "Encapsulation"]
+
+  VIOLATIONS:
+    - "Temporal coupling detected: '{{METHOD1}}' and '{{METHOD2}}' are called together {{COUPLING_RATIO}} of the time ({{TOGETHER_COUNT}}/{{TOTAL_OCCURRENCES}} calls)"
+    - "Methods '{{METHOD1}}' and '{{METHOD2}}' are always called together - consider refactoring"
+    - "Temporal coupling pattern: {{METHOD1}} → {{METHOD2}} ({{COUPLING_RATIO}} coupling ratio)"
+
+END_RULE

@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-DON’TUSE
+# Group: don’t-use-the
+# Merged from 5 individual language-specific rules
+# Languages: javascript, typescript
+
+RULE "Don’t use the default session cookie name Using the default session cookie name can open your app to attacks. The security issue posed is similar to X-Powered-By: a potential attacker can use it to fingerprint the server and target attacks accordingly." : IValidationArchitecture
+  ID: "SEMGREP-SEC-DON’TUSE"
+  DESCRIPTION: "Don’t use the default session cookie name Using the default session cookie name can open your app to attacks. The security issue posed is similar to X-Powered-By: a potential attacker can use it to fingerprint the server and target attacks accordingly."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["javascript", "typescript"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"javascript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"}],\"typescript\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027cookie-session\\u0027);\\n...\\n\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":1,\"Pattern\":\"$SESSION = require(\\u0027express-session\\u0027);\\n...\\n\"}]},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"$SESSION(...)\"}]}"
+
+  VIOLATIONS:
+    - "Don’t use the default session cookie name Using the default session cookie name can open your app to attacks. The security issue posed is similar to X-Powered-By: a potential attacker can use it to fingerprint the server and target attacks accordingly."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Don’t use the default session cookie name Using the default session cookie name can open your app to attacks. The security issue posed is similar to X-Powered-By: a potential attacker can use it to fingerprint the server and target attacks accordingly. This can lead to security vulnerabilities. (don’t use the)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://owasp.org/Top10/A04_2021-Insecure_Design"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 5
+    SOURCE_GROUP: "don’t-use-the"
+
+END RULE

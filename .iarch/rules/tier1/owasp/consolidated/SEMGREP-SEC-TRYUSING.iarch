@@ -1,0 +1,41 @@
+# Consolidated Rule: SEMGREP-SEC-TRYUSING
+# Group: try-using-math/bits
+# Merged from 1 individual language-specific rules
+# Languages: go
+
+RULE "Try using math/bits instead" : IValidationArchitecture
+  ID: "SEMGREP-SEC-TRYUSING"
+  DESCRIPTION: "Try using math/bits instead"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["go"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"go\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":2,\"Children\":[{\"Name\":\"SEMGREP_PATTERN_1_OR_0\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E $N | $X \\u003C\\u003C (8 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_1\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C $N | $X \\u003E\\u003E (8 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_2\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E (8 - $N) | $X \\u003C\\u003C $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_3\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C (8 - $N) | $X \\u003E\\u003E $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_4\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E $N | $X \\u003C\\u003C (16 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_5\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C $N | $X \\u003E\\u003E (16 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_6\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E (16 - $N) | $X \\u003C\\u003C $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_7\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C (16 - $N) | $X \\u003E\\u003E $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_8\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E $N | $X \\u003C\\u003C (32 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_9\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C $N | $X \\u003E\\u003E (32 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_10\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E (32 - $N) | $X \\u003C\\u003C $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_11\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C (32 - $N) | $X \\u003E\\u003E $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_12\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E $N | $X \\u003C\\u003C (64 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_13\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C $N | $X \\u003E\\u003E (64 - $N)\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_14\",\"Type\":0,\"Pattern\":\"$X \\u003E\\u003E (64 - $N) | $X \\u003C\\u003C $N\"},{\"Name\":\"SEMGREP_PATTERN_1_OR_15\",\"Type\":0,\"Pattern\":\"$X \\u003C\\u003C (64 - $N) | $X \\u003E\\u003E $N\"}]}]}"
+
+  VIOLATIONS:
+    - "Try using math/bits instead"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Try using math/bits instead This can lead to security vulnerabilities. (try using math/bits)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "try-using-math/bits"
+
+END RULE

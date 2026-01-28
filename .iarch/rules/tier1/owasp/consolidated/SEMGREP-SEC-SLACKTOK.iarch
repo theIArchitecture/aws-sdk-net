@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-SLACKTOK
+# Group: slack-token-detected
+# Merged from 1 individual language-specific rules
+# Languages: regex
+
+RULE "Slack Token detected" : IValidationArchitecture
+  ID: "SEMGREP-SEC-SLACKTOK"
+  DESCRIPTION: "Slack Token detected"
+  SEVERITY: Fatal
+  CATEGORY: "Security"
+  APPLIES_TO: ["regex"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "owasp-security"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"regex\":[{\"Name\":\"TODO\",\"Type\":0,\"Pattern\":\"# TODO: Extract Semgrep patterns from YAML - requires Semgrep validator plugin\"}]}"
+
+  VIOLATIONS:
+    - "Slack Token detected"
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Slack Token detected This can lead to security vulnerabilities. (slack token detected)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://github.com/davidburkitt/python-secret-scanner/blob/335a1f6dab8de59cf39063e57aea39a58951e939/patterns.txt#L58"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 1
+    SOURCE_GROUP: "slack-token-detected"
+
+END RULE

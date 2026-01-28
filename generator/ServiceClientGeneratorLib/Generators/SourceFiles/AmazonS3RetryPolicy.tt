@@ -1,0 +1,51 @@
+﻿<#@ template language="C#" inherits="BaseGenerator"#>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#
+	AddLicenseHeader();
+#>
+using Amazon.Runtime;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Auth;
+using Amazon.S3.Model;
+using Amazon.S3.Util;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Net;
+
+namespace Amazon.S3.Internal
+{
+	/// <summary>
+	/// This generated class exists solely to populate the list of request types that should be retried when a 200 status code with an error is encountered. The list
+	/// is model driven, and should not be modified.
+	/// </summary>
+	public partial class AmazonS3RetryPolicy : DefaultRetryPolicy
+	{
+		internal static readonly ICollection<Type> RequestsWith200Error = new HashSet<Type>
+		{
+<#
+	
+	foreach(var operation in this.Config.ServiceModel.Operations)
+	{
+		// List all operations without an output shape or an output shape that does not match any of the following conditions:
+		// "streaming":true
+		// "eventstream":true
+		// "payload" of type "string"
+		if((operation.ResponseStructure != null && 
+			!operation.ResponseStructure.Members.Any(member => member.IsStreaming || member.IsEventStream) &&
+			operation.ResponseStructure.PayloadMember?.OwningShape.IsString != true) ||
+			operation.ResponseStructure == null // When ResponseStructure is null the operation does not have an output shape.
+		)
+		{
+#>
+			typeof(<#= operation.Name#>Request),
+<#
+		}
+	}
+#>
+		};
+	}
+}

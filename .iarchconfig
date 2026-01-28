@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "defaultLayer": "Base",
+  "layerHierarchy": {
+    "Base": {
+      "inheritsFrom": []
+    },
+    "Model": {
+      "inheritsFrom": ["Base"]
+    },
+    "Internal": {
+      "inheritsFrom": ["Base", "Model"]
+    },
+    "Client": {
+      "inheritsFrom": ["Base", "Model", "Internal"]
+    }
+  },
+  "engineConfig": {
+    "parallel_threads": 9,
+    "files_per_batch": 50,
+    "progressive_output_threshold": 200,
+  "ignorePatterns": [
+    "node_modules",
+    "bin", "obj", "target", "build", "dist", "out", "packages",
+    ".git", ".vs", ".vscode", ".idea",
+    "\\test\\", "/test/", "tests/", "test-fixtures", "fixtures",
+    "vendor", "third_party", "third-party",
+    "__pycache__", ".pytest_cache"
+  ]
+  }
+}

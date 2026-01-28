@@ -1,0 +1,42 @@
+# Consolidated Rule: SEMGREP-SEC-WEAKCRYP
+# Group: weak-crypto-cipher
+# Merged from 3 individual language-specific rules
+# Languages: python
+
+RULE "Detected Blowfish cipher algorithm which is considered insecure. This algorithm is not cryptographically secure and can be reversed easily. Use secure stream ciphers such as ChaCha20, XChaCha20 and Salsa20, or a block cipher such as AES with a block size of 128 bits. When using a block cipher, use a modern mode of operation that also provides authentication, such as GCM." : IValidationArchitecture
+  ID: "SEMGREP-SEC-WEAKCRYP"
+  DESCRIPTION: "Detected Blowfish cipher algorithm which is considered insecure. This algorithm is not cryptographically secure and can be reversed easily. Use secure stream ciphers such as ChaCha20, XChaCha20 and Salsa20, or a block cipher such as AES with a block size of 128 bits. When using a block cipher, use a modern mode of operation that also provides authentication, such as GCM."
+  SEVERITY: Warning
+  CATEGORY: "Security"
+  APPLIES_TO: ["python"]
+
+  ARCHITECTURAL_CONTEXT:
+    CATEGORY: "Security"
+    LAYER: "Base"
+    SOURCE: "Semgrep Registry"
+    PACK: "cwe-top25"
+
+  PLUGIN:
+    ID: "semgrep-validator"
+    SCOPE: "file"
+    CONFIG:
+      semgrep_patterns: "{\"python\":[{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"Cryptodome.Cipher.Blowfish.new(...)\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"Crypto.Cipher.Blowfish.new(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"Cryptodome.Cipher.ARC2.new(...)\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"Crypto.Cipher.ARC2.new(...)\"},{\"Name\":\"SEMGREP_PATTERN_1\",\"Type\":0,\"Pattern\":\"Cryptodome.Cipher.ARC4.new(...)\"},{\"Name\":\"SEMGREP_PATTERN_2\",\"Type\":0,\"Pattern\":\"Crypto.Cipher.ARC4.new(...)\"}]}"
+
+  VIOLATIONS:
+    - "Detected Blowfish cipher algorithm which is considered insecure. This algorithm is not cryptographically secure and can be reversed easily. Use secure stream ciphers such as ChaCha20, XChaCha20 and Salsa20, or a block cipher such as AES with a block size of 128 bits. When using a block cipher, use a modern mode of operation that also provides authentication, such as GCM."
+
+  EDUCATION:
+    WHY_IT_MATTERS: "Detected Blowfish cipher algorithm which is considered insecure. This algorithm is not cryptographically secure and can be reversed easily. Use secure stream ciphers such as ChaCha20, XChaCha20 and Salsa20, or a block cipher such as AES with a block size of 128 bits. When using a block cipher, use a modern mode of operation that also provides authentication, such as GCM. This can lead to security vulnerabilities. (weak crypto cipher)"
+    BUSINESS_IMPACT: "Security vulnerabilities can lead to data breaches and compliance failures."
+    QUICK_FIX: "Follow security best practices and use approved patterns."
+    DOCS_URL: "https://stackoverflow.com/questions/1135186/whats-wrong-with-xor-encryption"
+
+  META_ARCHITECTURE:
+    HEALING_PRIORITY: 5
+    BREAKING_CHANGE: false
+    EXTRACTED_FROM: "Semgrep Registry"
+    CONSOLIDATION_DATE: "2026-01-14"
+    INDIVIDUAL_RULES_COUNT: 3
+    SOURCE_GROUP: "weak-crypto-cipher"
+
+END RULE

@@ -1,0 +1,147 @@
+RULE "C# Snake Case Private Fields" : IHealerArchitecture
+
+ID: "NAMING-CSHARP-SNAKE-CASE-FIELDS-001"
+
+NAME: "C# Snake Case Private Fields"
+
+DESCRIPTION:
+  Private fields using snake_case naming convention instead of C# standard camelCase or _camelCase.
+  This violates .NET naming conventions and reduces code readability.
+
+CATEGORY: NamingConventions
+
+SEVERITY: Warning
+
+LANGUAGES:
+  - csharp
+
+  C# naming conventions specify that private fields should use camelCase (e.g., apiKey)
+  or _camelCase with underscore prefix (e.g., _apiKey). Using snake_case (e.g., api_key)
+  is a convention from other languages like Python or Ruby and is inconsistent with
+  C# standards.
+
+  This creates:
+  - **Code Inconsistency**: Mixing naming styles makes code harder to read
+  - **Reduced Maintainability**: Developers expect C# conventions; violations slow comprehension
+  - **Team Confusion**: New developers may not recognize the field's scope or purpose
+  - **Tooling Issues**: Some refactoring tools expect standard C# naming
+
+BUSINESS_IMPACT: |
+  Code Style Violations:
+  - Slower code reviews (15-20% more time spent on style discussions)
+  - Increased onboarding time for new developers
+  - Higher risk of bugs during refactoring due to inconsistent patterns
+  - Reduced team velocity from context-switching between naming styles
+
+  Cost Impact:
+  - Code review delays: $200-$500 per PR with extensive style violations
+  - Onboarding overhead: 5-10 hours additional training per new developer
+  - Refactoring errors: $1K-$5K per incident when automated tools miss non-standard names
+
+PLUGIN:
+  ID: "csharp-naming-validator"
+  CONFIG:
+    check_snake_case_fields: true
+
+VIOLATIONS:
+  - "Private field uses snake_case instead of camelCase or _camelCase"
+
+EXAMPLES:
+  VIOLATION:
+    ```csharp
+    public class PaymentService
+    {
+        private string api_key;           // VIOLATION: snake_case
+        private int max_retries;          // VIOLATION: snake_case
+        private bool use_sandbox_mode;    // VIOLATION: snake_case
+
+        public void ProcessPayment()
+        {
+            var client = new StripeClient(api_key);
+            // ... rest of implementation
+        }
+    }
+    ```
+
+  COMPLIANT:
+    ```csharp
+    public class PaymentService
+    {
+        private string _apiKey;           // CORRECT: _camelCase with underscore prefix
+        private int _maxRetries;          // CORRECT: _camelCase with underscore prefix
+        private bool _useSandboxMode;     // CORRECT: _camelCase with underscore prefix
+
+        public void ProcessPayment()
+        {
+            var client = new StripeClient(_apiKey);
+            // ... rest of implementation
+        }
+    }
+    ```
+
+FIXES:
+  PLUGIN:
+    ID: "csharp-naming-healer"
+    CONFIG:
+      use_underscore_prefix: true
+
+  QUICK_FIX: |
+    Convert snake_case field names to _camelCase:
+    1. Identify the field: private string api_key;
+    2. Convert to camelCase: apiKey
+    3. Add underscore prefix: _apiKey
+    4. Update all references throughout the file
+
+    The TypeScript healer plugin will automatically:
+    - Rename the field declaration
+    - Update all usages of the field (this.api_key -> this._apiKey)
+    - Ensure consistent naming throughout the file
+
+    Example:
+      Before: private string api_key;
+      After:  private string _apiKey;
+
+EDUCATION:
+  LEARN_MORE:
+    - title: "C# Naming Conventions"
+      url: "https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions"
+    - title: ".NET Framework Design Guidelines"
+      url: "https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines"
+    - title: "C# Coding Standards Best Practices"
+      url: "https://www.dofactory.com/csharp-coding-standards"
+
+  TRAINING_NOTES: |
+    **C# Field Naming Conventions:**
+
+    1. **Private Fields**: Use camelCase or _camelCase (with underscore)
+       - camelCase: `private string apiKey;`
+       - _camelCase: `private string _apiKey;` (more common in modern C#)
+
+    2. **Public Fields**: Use PascalCase (though public fields are discouraged)
+       - PascalCase: `public string ApiKey;`
+
+    3. **Why Underscore Prefix?**
+       - Distinguishes fields from local variables and parameters
+       - Makes it clear when you're accessing instance state vs. local scope
+       - Recommended by Microsoft's C# team for new code
+
+    4. **Migration Strategy:**
+       - Use the healer plugin to automatically convert existing code
+       - Enforce convention for all new code via real-time validation
+       - Update code review checklists to catch manual violations
+
+    **Remember:** Consistency is key. Pick one convention (_camelCase or camelCase)
+    and apply it consistently across your codebase.
+
+METADATA:
+  CREATED_BY: "IArchitecture Plugin Demo"
+  CREATED_DATE: "2025-11-18"
+  LAST_UPDATED: "2025-11-18"
+  VERSION: "1.0.0"
+  TAGS:
+    - naming
+    - code-style
+    - csharp-conventions
+    - polyglot-plugins
+
+END RULE

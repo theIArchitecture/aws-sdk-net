@@ -1,0 +1,28 @@
+{
+  "discovery-root": ".",
+  "bundled-defaults-path": "../dist",
+  "version": "1.0",
+  "default-layer": "Core",
+  "layer-hierarchy": {
+    "Core": { "inherits-from": [] },
+    "Services": { "inherits-from": ["Core"] },
+    "Extensions": { "inherits-from": ["Core", "Services"] }
+  },
+  "engine-config": {
+    "parallel-threads": 9,
+    "max-file-size-bytes": 500000,
+    "files-per-batch": 50,
+    "progressive-output-threshold": 200,
+    "cache-root-path": "I:/cache/aws-sdk-net",
+    "ignore-patterns": [
+      "node_modules",
+      "bin", "obj", "build", "dist", "out", "artifacts",
+      ".git", ".vs", ".iarch", ".modulus", ".claude",
+      "vendor", "third_party", "third-party",
+      "packages", "TestResults",
+      "Generated",
+      "*.g.cs", "*.Designer.cs",
+      "*.min.js", "*.bundle.js"
+    ]
+  }
+}

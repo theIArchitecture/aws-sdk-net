@@ -3,6 +3,17 @@
   "bundled-defaults-path": "../dist",
   "version": "1.0",
   "default-layer": "Core",
+  "governance": {
+    "embedding-model": "nomic-embed-text",
+    "ollama-host": "http://localhost:11434",
+    "embedding-max-types": 1200,
+    "embedding-batch-delay-ms": 50,
+    "dbscan-epsilon": 0.30,
+    "dbscan-min-pts": 3,
+    "analysis-seed": 42,
+    "min-cluster-purity": 0.6,
+    "duplicate-threshold": 0.96
+  },
   "layer-hierarchy": {
     "Core": { "inherits-from": [] },
     "Services": { "inherits-from": ["Core"] },
@@ -21,6 +32,9 @@
       "vendor", "third_party", "third-party",
       "packages", "TestResults",
       "Generated",
+      "generator", "buildtools", "docgenerator",
+      "changelogs", "diagnostics",
+      "test", "tests",
       "*.g.cs", "*.Designer.cs",
       "*.min.js", "*.bundle.js"
     ]
